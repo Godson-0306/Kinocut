@@ -1,0 +1,41 @@
+# Kinocut
+
+> Kinocut is a subscription edit bay. It edits YouTube videos, shorts, podcast clips, and ads for one flat monthly fee, one request at a time. Cancel anytime.
+
+## Offer
+
+- One flat monthly fee. Launch price is $4,500 per month.
+- One active request at a time, then the next one starts.
+- About 48 hours average turnaround once the handoff is complete.
+- Unlimited revisions on the open cut.
+- Up to 2 users, a shared request board, captions, commercial music, and stock footage.
+- Cancel before the next bill. The month already paid stays usable until it ends.
+- Pricing: https://kinocut.studio/#pricing
+
+## How it works
+
+1. Subscribe. Pick the bay. One queue, no hourly meter. Cancel before the next bill.
+2. Send footage. A Google Drive, Dropbox, Frame.io, or WeTransfer link is enough, plus one sentence about what the video must do.
+3. Receive edits. A finished cut comes back, usually within 48 hours, with captions, grade, and sound cleaned up.
+
+How it works: https://kinocut.studio/#how
+
+## Who it is for
+
+YouTubers, podcasters, agencies, startups, course creators, and social media teams who publish every week.
+
+## What is not included
+
+Kinocut does not shoot. It does not build 3D scenes, feature-length films, or heavy VFX such as set extensions, creature work, or frame-by-frame cleanup.
+
+## Answers
+
+Twelve questions on turnaround, footage handoff, the first week, request limits, canceling, long-form and shorts, software, revisions, exclusions, music licensing, refunds, and a single busy month:
+
+https://kinocut.studio/#faq
+
+## Contact
+
+- Email: hello@kinocut.studio
+- Book a 15-minute intro: https://kinocut.studio/#book
+- Site: https://kinocut.studio/
