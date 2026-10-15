@@ -68,13 +68,18 @@ export function Cursor() {
 
   return (
     <div ref={head} aria-hidden="true" className="pointer-events-none fixed left-0 top-0 z-[80] opacity-0">
-      <span className="cursor-diamond" />
-      <span className="cursor-stem" style={{ height: mode === "default" ? 22 : 34 }} />
-      {mode === "play" || mode === "drag" ? (
-        <span className="cursor-label type-micro absolute left-3 top-3 whitespace-nowrap">
-          {mode === "play" ? "Play" : "Drag"}
-        </span>
-      ) : null}
+      <div
+        className="origin-top-left transition-transform duration-150 ease-out"
+        style={{ transform: mode === "hover" ? "scale(1.2)" : "scale(1)" }}
+      >
+        <span className="cursor-diamond" />
+        <span className="cursor-stem" style={{ height: 22 }} />
+        {mode === "play" || mode === "drag" ? (
+          <span className="cursor-label type-micro absolute left-3 top-3 whitespace-nowrap">
+            {mode === "play" ? "Play" : "Drag"}
+          </span>
+        ) : null}
+      </div>
     </div>
   );
 }
