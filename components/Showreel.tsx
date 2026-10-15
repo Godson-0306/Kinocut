@@ -209,7 +209,7 @@ function ReelCard({
       aria-label={`Watch ${reel.client}, ${reel.title}`}
       data-cursor={playable ? "play" : "hover"}
       className={cn(
-        "group relative shrink-0 cursor-pointer overflow-hidden rounded-card bg-ink shadow-soft",
+        "group relative shrink-0 overflow-hidden rounded-card bg-ink shadow-soft",
         reel.aspect === "tall" ? "h-[460px] w-[260px]" : "h-[320px] w-[520px]",
       )}
       onPointerDown={(event) => event.stopPropagation()}

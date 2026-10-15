@@ -1054,9 +1054,7 @@
 
 @media (pointer: fine) {
   html.has-custom-cursor,
-  html.has-custom-cursor body,
-  html.has-custom-cursor a,
-  html.has-custom-cursor button {
+  html.has-custom-cursor * {
     cursor: none;
   }
 
