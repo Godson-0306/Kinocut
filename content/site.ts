@@ -27,7 +27,7 @@ export const site = {
     badge: "Now accepting 3 new clients",
     line1: "Drop the rushes.",
     line2Before: "Leave with the ",
-    accent: "film",
+    accent: "footage",
     support: "A full edit bay for one flat monthly fee.",
     subline: "Cancel anytime.",
     primary: "Start today",
@@ -277,34 +277,70 @@ export const site = {
   },
   pricing: {
     timecode: "00:00:58:00",
-    title: "One plan. The whole bay.",
+    title: "Three plans. One bay.",
     accent: "bay",
     lede: "Everything you need to publish. Nothing that needs a producer to explain.",
-    /** Placeholder launch price. Edit these two numbers. */
-    price: 4500,
-    compareAt: 6200,
     cadence: "/ month",
-    sticker: "Launch pricing",
     slots: "3 bays open this month",
     cta: "Join today",
-    features: [
-      "One active request at a time",
-      "About 48 hours average turnaround",
-      "Unlimited revisions on the open cut",
-      "Up to 2 users on the bay",
-      "Shared request board",
-      "Captions and subtitles included",
-      "Commercial music and stock footage included",
-      "Cancel anytime",
-    ],
-    reassurances: [
+    plans: [
       {
-        title: "Cancel anytime",
-        body: "Write to us before the next bill. The month you paid stays usable, and your style notes stay on file.",
+        id: "spark",
+        name: "Spark",
+        price: 499,
+        featured: false,
+        features: [
+          "One active request",
+          "Short-form, clips, UGC, and ads up to 60s",
+          "Interviews and vlogs up to 5 minutes",
+          "YouTube, demos, podcasts, and motion graphics not included",
+          "Short-form averages 48 hours",
+          "Long-form in 4 business days",
+          "1 revision round",
+        ],
       },
       {
-        title: "Try it for a week",
-        body: "If the first delivery misses, tell us within seven days and we refund that first payment.",
+        id: "momentum",
+        name: "Momentum",
+        price: 999,
+        featured: true,
+        sticker: "Most chosen",
+        features: [
+          "One active request",
+          "Short-form up to 90s",
+          "Interviews and vlogs up to 15 minutes",
+          "YouTube and product demos up to 15 minutes",
+          "Podcasts and webinars from up to 60 minutes of footage",
+          "Animated captions and lower-thirds",
+          "Short-form averages 48 hours",
+          "Long-form in 3 business days",
+          "2 revision rounds",
+        ],
+      },
+      {
+        id: "studio",
+        name: "Studio",
+        price: 2499,
+        featured: false,
+        features: [
+          "One active request",
+          "Short-form up to 90s",
+          "Interviews, vlogs, YouTube, and demos up to 20 minutes",
+          "Podcasts and webinars from up to 90 minutes of footage",
+          "Custom motion graphics up to 30s",
+          "Short-form and long-form average 48 hours",
+          "2 revision rounds, plus free minor tweaks",
+        ],
+      },
+    ],
+    notes: [
+      {
+        title: "Every plan",
+        body: "An unlimited queue you can reorder until a request starts. One active request at a time. The next starts when you approve, or after 3 business days of silence. Turnaround is business days from a complete brief and footage. Brand kit at onboarding. You own the final files.",
+      },
+      {
+        title: "How a request counts",
+        body: "One request is one finished video, plus up to 3 resizes. Up to 5 clips from one source count as one request. Send notes as one message with timestamps. A new direction after approval is a new request. Work over the length limit is split or quoted. Shoots, scripting, voiceover talent, 3D, and music outside the library are not included. Agencies reselling the work need a white-label plan.",
       },
     ],
   },
@@ -316,7 +352,7 @@ export const site = {
     items: [
       {
         q: "How fast do cuts come back?",
-        a: "Most requests land within about 48 hours of a complete handoff. A tight 15-second reel can be quicker. A 20-minute YouTube episode with chapters, captions, and a thumbnail takes the longer side of that window. We tell you the slot when the request goes in.",
+        a: "Short-form averages 48 hours on every plan, once the brief and footage are complete. Long-form is 4 business days on Spark, 3 on Momentum, and 48 hours on Studio. Turnaround is counted in business days.",
       },
       {
         q: "How do I send footage?",
@@ -328,7 +364,7 @@ export const site = {
       },
       {
         q: "Can I stack requests?",
-        a: "One active request at a time. That is the whole trick: your editor stays with the video in front of them instead of juggling five. When a cut is delivered, or you park it, the next one starts. Need more in parallel? Add a second bay.",
+        a: "One active request at a time. You can line up an unlimited queue and reorder it until a request starts. When you approve a cut, or if we have not heard back within 3 business days of delivery, the next request starts.",
       },
       {
         q: "How does canceling work?",
@@ -344,7 +380,7 @@ export const site = {
       },
       {
         q: "What counts as a revision?",
-        a: "Notes on a delivered cut are included, and they are not rationed. Move the chapter, swap the hook, quiet the room tone: that is a revision. A new video, a new campaign of aspect ratios, or a different episode is a new request.",
+        a: "Spark includes 1 revision round. Momentum includes 2. Studio includes 2, plus free minor tweaks. Send the notes as one message with timestamps. A new direction after you approve the cut is a new request.",
       },
       {
         q: "What do you not take on?",
@@ -401,6 +437,14 @@ export function formatPrice(value: number) {
   }).format(value);
 }
 
+export function formatNaira(value: number) {
+  return new Intl.NumberFormat("en-NG", {
+    style: "currency",
+    currency: "NGN",
+    maximumFractionDigits: 0,
+  }).format(value);
+}
+
 export function serviceJsonLd() {
   return {
     "@context": "https://schema.org",
@@ -428,12 +472,14 @@ export function serviceJsonLd() {
         url: site.url,
         description: site.meta.description,
         offers: {
-          "@type": "Offer",
-          price: String(site.pricing.price),
+          "@type": "AggregateOffer",
+          lowPrice: String(Math.min(...site.pricing.plans.map((plan) => plan.price))),
+          highPrice: String(Math.max(...site.pricing.plans.map((plan) => plan.price))),
+          offerCount: site.pricing.plans.length,
           priceCurrency: "USD",
           url: `${site.url}/#pricing`,
           availability: "https://schema.org/InStock",
-          description: "One flat monthly fee. One request at a time. Cancel anytime.",
+          description: "Spark, Momentum, or Studio. One request at a time.",
         },
       },
       {

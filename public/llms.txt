@@ -4,11 +4,12 @@
 
 ## Offer
 
-- One flat monthly fee. Launch price is $4,500 per month.
-- One active request at a time, then the next one starts.
-- About 48 hours average turnaround once the handoff is complete.
-- Unlimited revisions on the open cut.
-- Up to 2 users, a shared request board, captions, commercial music, and stock footage.
+- Three monthly plans: Spark $499, Momentum $999, Studio $2,499.
+- One active request at a time. An unlimited queue you can reorder until a request starts. The next starts when you approve, or after 3 business days of silence.
+- Short-form averages 48 hours. Long-form is 4 business days on Spark, 3 on Momentum, and 48 hours on Studio.
+- Revision rounds: 1 on Spark, 2 on Momentum, 2 plus minor tweaks on Studio.
+- One request is one finished video plus up to 3 resizes, or up to 5 clips from one source.
+- Brand kit at onboarding. You own the final files.
 - Cancel before the next bill. The month already paid stays usable until it ends.
 - Pricing: https://kinocut.pro/#pricing
 

@@ -51,7 +51,7 @@ Replace the poster path and `src` per card when you have real cuts. Keep posters
 | `public/grain.png` | 180×180 tile, drawn at 4.5% opacity over the whole page. |
 | `app/icon.svg` | Favicon. |
 | `site.links.calendar` | Calendly (or other) booking URL. The final section is a placeholder grid until you paste an embed. |
-| `site.pricing.price` / `compareAt` | Launch price. Currently $4,500 from $6,200. |
+| `site.pricing.plans` | Spark $499, Momentum $999, Studio $2,499 per month. Naira is a live conversion. |
 | Testimonials, logos, stats | Marked as placeholders in the UI. Replace them in `content/site.ts`. |
 
 Regenerate the placeholders with:

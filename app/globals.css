@@ -250,6 +250,20 @@
     font-variation-settings: "opsz" 96, "wdth" 78, "wght" 800;
   }
 
+  @media (max-width: 767px) {
+    .hero-line .aurora-text {
+      animation: none;
+    }
+
+    .hero-line .axis-hover,
+    .hero-line .axis-hover:hover {
+      font-weight: 760;
+      font-stretch: 88%;
+      font-variation-settings: "opsz" 96, "wdth" 88, "wght" 760;
+      transition: none;
+    }
+  }
+
   .bg-aurora {
     background-image: var(--aurora);
   }
@@ -1003,6 +1017,39 @@
   .parallax-3 {
     transform: none !important;
   }
+}
+
+.cursor-diamond,
+.cursor-stem {
+  position: absolute;
+  left: 0;
+  background: var(--ink-800-hex);
+  box-shadow:
+    0 0 0 1px var(--white-hex),
+    0 0 0 2px rgb(var(--ink-800) / 0.28);
+}
+
+.cursor-diamond {
+  top: 0;
+  width: 9px;
+  height: 9px;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.cursor-stem {
+  top: 6px;
+  width: 1.5px;
+  transform: translateX(-50%);
+}
+
+.cursor-label {
+  color: var(--ink-800-hex);
+  text-shadow:
+    0 0 1px var(--white-hex),
+    1px 0 0 var(--white-hex),
+    -1px 0 0 var(--white-hex),
+    0 1px 0 var(--white-hex),
+    0 -1px 0 var(--white-hex);
 }
 
 @media (pointer: fine) {

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { site } from "@/content/site";
@@ -21,23 +22,31 @@ const links = [
 ];
 
 export function Navbar() {
-  const [booted, setBooted] = useState(false);
+  const pathname = usePathname();
+  const interior = pathname !== "/";
+  const [booted, setBooted] = useState(interior);
   const [hidden, setHidden] = useState(false);
-  const [solid, setSolid] = useState(false);
+  const [solid, setSolid] = useState(interior);
   const [open, setOpen] = useState(false);
   const openRef = useRef(false);
   const closeRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
+    if (interior) {
+      setBooted(true);
+      setSolid(true);
+      return;
+    }
+    setSolid(false);
     return onIntroDone(() => setBooted(true));
-  }, []);
+  }, [interior]);
 
   useEffect(() => {
     return subscribeScroll(({ y, direction }) => {
-      setSolid(y > window.innerHeight * 0.72);
+      if (!interior) setSolid(y > window.innerHeight * 0.72);
       setHidden(!openRef.current && y > 80 && direction > 0);
     });
-  }, []);
+  }, [interior]);
 
   useEffect(() => {
     openRef.current = open;

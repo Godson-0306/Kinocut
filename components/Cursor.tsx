@@ -68,13 +68,10 @@ export function Cursor() {
 
   return (
     <div ref={head} aria-hidden="true" className="pointer-events-none fixed left-0 top-0 z-[80] opacity-0">
-      <span className="absolute left-0 top-0 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rotate-45 bg-white mix-blend-difference" />
-      <span
-        className="absolute left-0 top-1 w-px -translate-x-1/2 bg-white mix-blend-difference"
-        style={{ height: mode === "default" ? 22 : 34 }}
-      />
+      <span className="cursor-diamond" />
+      <span className="cursor-stem" style={{ height: mode === "default" ? 22 : 34 }} />
       {mode === "play" || mode === "drag" ? (
-        <span className="type-micro absolute left-3 top-3 whitespace-nowrap text-white mix-blend-difference">
+        <span className="cursor-label type-micro absolute left-3 top-3 whitespace-nowrap">
           {mode === "play" ? "Play" : "Drag"}
         </span>
       ) : null}
