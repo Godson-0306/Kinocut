@@ -40,7 +40,7 @@ Recommended capture: a dim studio, a timeline, or slow hands-on-footage. Avoid b
 | File | Used by |
 | --- | --- |
 | `public/images/posters/reel-01.jpg` … `reel-08.jpg` | Card posters. Wide cards are 16:9, tall cards are 9:16. |
-| `showreel.reels[].src` in `content/site.ts` | Muted hover preview. All eight cards currently share `hero-mobile.mp4`. |
+| `showreel.reels[].src` in `content/site.ts` | Optional muted preview. Loaded only when that card is played. |
 
 Replace the poster path and `src` per card when you have real cuts. Keep posters under about 200KB.
 

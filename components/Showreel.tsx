@@ -2,17 +2,41 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, X } from "lucide-react";
 import { site } from "@/content/site";
 import { registerGsap } from "@/lib/gsap";
 import { cn } from "@/lib/utils";
 import { BeforeAfterSlider } from "./BeforeAfterSlider";
 import { SectionHeading } from "./SectionHeading";
 
+type NetworkInformation = { saveData?: boolean; effectiveType?: string };
+
 export function Showreel() {
   const pinRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const progress = useRef(0);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [canPlay, setCanPlay] = useState(false);
+  const [hoverCapable, setHoverCapable] = useState(false);
+  const [watching, setWatching] = useState<(typeof site.showreel.reels)[number] | null>(null);
+
+  useEffect(() => {
+    if (!watching) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setWatching(null);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [watching]);
+
+  useEffect(() => {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const hover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+    const connection = (navigator as Navigator & { connection?: NetworkInformation }).connection;
+    const saveData = Boolean(connection?.saveData || connection?.effectiveType === "2g" || connection?.effectiveType === "slow-2g");
+    setHoverCapable(hover);
+    setCanPlay(!reduce && !saveData);
+  }, []);
 
   useEffect(() => {
     const pin = pinRef.current;
@@ -105,7 +129,19 @@ export function Showreel() {
         <div id="reel-scroller" className="overflow-x-auto lg:overflow-hidden" data-cursor="drag">
           <div ref={trackRef} className="flex w-max items-center gap-5 px-5 pb-4 md:px-8">
             {site.showreel.reels.map((reel) => (
-              <ReelCard key={reel.id} reel={reel} />
+              <ReelCard
+                key={reel.id}
+                reel={reel}
+                active={activeId === reel.id}
+                canPlay={canPlay}
+                hoverCapable={hoverCapable}
+                onPlay={() => setActiveId(reel.id)}
+                onStop={() => setActiveId((current) => (current === reel.id ? null : current))}
+                onWatch={() => {
+                  setActiveId(null);
+                  setWatching(reel);
+                }}
+              />
             ))}
           </div>
         </div>
@@ -113,43 +149,98 @@ export function Showreel() {
       <div className="mx-auto max-w-[1100px] px-5 pb-24 md:px-8">
         <BeforeAfterSlider />
       </div>
+      {watching ? (
+        <div
+          className="fixed inset-0 z-[90] flex items-center justify-center bg-ink-950/85 p-4 md:p-10"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${watching.client}, ${watching.title}`}
+          onClick={() => setWatching(null)}
+        >
+          <div className="w-full max-w-5xl" onClick={(event) => event.stopPropagation()}>
+            <div className="mb-3 flex items-center justify-between gap-4 text-white">
+              <p className="type-micro">
+                {watching.client} · {watching.title}
+              </p>
+              <button type="button" className="grid h-11 w-11 place-items-center rounded-full border border-white/20" aria-label="Close video" onClick={() => setWatching(null)}>
+                <X />
+              </button>
+            </div>
+            <video className="max-h-[78svh] w-full rounded-card bg-black" src={watching.full} poster={watching.poster} controls autoPlay playsInline preload="auto" />
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }
 
-function ReelCard({ reel }: { reel: (typeof site.showreel.reels)[number] }) {
+function ReelCard({
+  reel,
+  active,
+  canPlay,
+  hoverCapable,
+  onPlay,
+  onStop,
+  onWatch,
+}: {
+  reel: (typeof site.showreel.reels)[number];
+  active: boolean;
+  canPlay: boolean;
+  hoverCapable: boolean;
+  onPlay: () => void;
+  onStop: () => void;
+  onWatch: () => void;
+}) {
   const video = useRef<HTMLVideoElement>(null);
   const [failed, setFailed] = useState(false);
+  const src = "src" in reel ? reel.src : "";
+  const playable = Boolean(src) && canPlay && !failed;
+
+  useEffect(() => {
+    const el = video.current;
+    if (!el || !active) return;
+    el.play().catch(() => setFailed(true));
+  }, [active]);
 
   return (
     <article
-      data-cursor="play"
+      role="button"
+      tabIndex={0}
+      aria-label={`Watch ${reel.client}, ${reel.title}`}
+      data-cursor={playable ? "play" : "hover"}
       className={cn(
-        "group relative shrink-0 overflow-hidden rounded-card bg-ink shadow-soft",
+        "group relative shrink-0 cursor-pointer overflow-hidden rounded-card bg-ink shadow-soft",
         reel.aspect === "tall" ? "h-[460px] w-[260px]" : "h-[320px] w-[520px]",
       )}
-      onMouseEnter={() => video.current?.play().catch(() => undefined)}
+      onPointerDown={(event) => event.stopPropagation()}
+      onMouseEnter={() => {
+        if (playable && hoverCapable) onPlay();
+      }}
       onMouseLeave={() => {
-        if (!video.current) return;
-        video.current.pause();
-        video.current.currentTime = 0;
+        if (hoverCapable) onStop();
+      }}
+      onClick={onWatch}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          onWatch();
+        }
       }}
     >
       <Image src={reel.poster} alt="" fill className="object-cover transition-transform duration-slow group-hover:scale-[1.04]" sizes={reel.aspect === "tall" ? "260px" : "520px"} />
-      {failed ? null : (
+      {playable && active ? (
         <video
           ref={video}
-          className="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-base group-hover:opacity-100"
+          className="absolute inset-0 h-full w-full object-cover"
+          src={src}
           muted
           loop
           playsInline
           preload="none"
-          poster={reel.poster}
+          autoPlay
           onError={() => setFailed(true)}
-        >
-          <source src={reel.src} type="video/mp4" />
-        </video>
-      )}
+        />
+      ) : null}
       <div className="absolute inset-0 bg-gradient-to-t from-ink-950/80 via-transparent to-ink-950/20" />
       <p className="type-micro absolute left-4 top-4 text-blue-100">{reel.timecode}</p>
       <div className="absolute bottom-4 left-4 right-4 text-white">
