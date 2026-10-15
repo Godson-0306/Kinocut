@@ -2,7 +2,7 @@ import { palette } from "./tokens";
 
 export const site = {
   name: "Kinocut",
-  url: "https://kinocut.studio",
+  url: "https://kinocut.pro",
   email: "hello@kinocut.studio",
   location: "A remote edit bay. Worldwide turnaround.",
   meta: {

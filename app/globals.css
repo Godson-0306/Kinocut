@@ -637,7 +637,57 @@
     transform: rotate(-8deg) scale(1);
   }
 
+  .bay-rail,
+  .bay-progress,
+  .bay-knob {
+    margin-top: 0 !important;
+  }
+
+  .bay-rail,
+  .bay-progress {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 4px;
+    border-radius: 999px;
+  }
+
+  .bay-rail {
+    background: rgb(var(--white) / 0.28);
+  }
+
+  .bay-progress {
+    transform-origin: top center;
+    transform: scaleY(1);
+    background-image: var(--aurora-light);
+    box-shadow: 0 0 18px rgb(var(--blue-300) / 0.9);
+  }
+
+  .bay-knob {
+    display: none;
+  }
+
   @media (min-width: 1024px) {
+    .bay-progress {
+      transform: scaleY(0.12);
+    }
+
+    .bay-knob {
+      position: absolute;
+      left: 2px;
+      top: 12%;
+      display: block;
+      width: 14px;
+      height: 14px;
+      border-radius: 2px;
+      background: rgb(var(--white) / 1);
+      box-shadow:
+        0 0 0 5px rgb(var(--blue-300) / 0.45),
+        0 0 18px rgb(var(--white) / 0.85);
+      transform: translate(-50%, -50%) rotate(45deg);
+    }
+
     /* Inactive titles drop to blue-300 (6.6:1 on ink). Body stays ink-300. */
     .bay-step h3 {
       color: rgb(var(--blue-300) / 1);

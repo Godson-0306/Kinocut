@@ -10,7 +10,7 @@
 - Unlimited revisions on the open cut.
 - Up to 2 users, a shared request board, captions, commercial music, and stock footage.
 - Cancel before the next bill. The month already paid stays usable until it ends.
-- Pricing: https://kinocut.studio/#pricing
+- Pricing: https://kinocut.pro/#pricing
 
 ## How it works
 
@@ -18,7 +18,7 @@
 2. Send footage. A Google Drive, Dropbox, Frame.io, or WeTransfer link is enough, plus one sentence about what the video must do.
 3. Receive edits. A finished cut comes back, usually within 48 hours, with captions, grade, and sound cleaned up.
 
-How it works: https://kinocut.studio/#how
+How it works: https://kinocut.pro/#how
 
 ## Who it is for
 
@@ -32,10 +32,10 @@ Kinocut does not shoot. It does not build 3D scenes, feature-length films, or he
 
 Twelve questions on turnaround, footage handoff, the first week, request limits, canceling, long-form and shorts, software, revisions, exclusions, music licensing, refunds, and a single busy month:
 
-https://kinocut.studio/#faq
+https://kinocut.pro/#faq
 
 ## Contact
 
 - Email: hello@kinocut.studio
-- Book a 15-minute intro: https://kinocut.studio/#book
-- Site: https://kinocut.studio/
+- Book a 15-minute intro: https://kinocut.pro/#book
+- Site: https://kinocut.pro/

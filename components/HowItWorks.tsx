@@ -24,6 +24,7 @@ export function HowItWorks() {
         const panels = gsap.utils.toArray<HTMLElement>(".bay-panel");
         const steps = gsap.utils.toArray<HTMLElement>(".bay-step");
         const progress = root.querySelector<HTMLElement>(".bay-progress");
+        const knob = root.querySelector<HTMLElement>(".bay-knob");
         let current = 0;
 
         const setStep = (index: number) => {
@@ -41,7 +42,9 @@ export function HowItWorks() {
           scrub: 0.6,
           anticipatePin: 1,
           onUpdate: (self) => {
-            if (progress) gsap.set(progress, { scaleY: Math.max(0.08, self.progress) });
+            const amount = Math.max(0.12, self.progress);
+            if (progress) gsap.set(progress, { scaleY: amount });
+            if (knob) gsap.set(knob, { top: `${amount * 100}%` });
             const next = self.progress < 0.34 ? 0 : self.progress < 0.67 ? 1 : 2;
             if (next !== current) {
               current = next;
@@ -69,8 +72,10 @@ export function HowItWorks() {
                 lede={site.how.lede}
                 tone="dark"
               />
-              <ol className="relative mt-10 space-y-6 border-l border-white/15 pl-6">
-                <span className="bay-progress absolute left-[-1px] top-0 h-full w-px origin-top scale-y-[0.08] bg-aurora" />
+              <ol className="relative mt-10 space-y-6 pl-8">
+                <span className="bay-rail" aria-hidden="true" />
+                <span className="bay-progress" />
+                <span className="bay-knob" aria-hidden="true" />
                 {site.how.steps.map((step, index) => (
                   <li key={step.id} className={cn("bay-step", index === 0 && "is-active")}>
                     <p className="type-micro text-blue-300">{step.index}</p>

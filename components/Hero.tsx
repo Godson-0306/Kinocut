@@ -75,7 +75,7 @@ export function Hero() {
 
           <div
             ref={contentRef}
-            className="pointer-events-none relative z-10 mx-auto flex min-h-[100svh] w-full max-w-[1240px] flex-col justify-start px-5 pb-20 pt-24 md:h-full md:min-h-0 md:justify-center md:px-8 md:pb-16 md:pt-28"
+            className="pointer-events-none relative z-10 mx-auto flex min-h-[100svh] w-full max-w-[1240px] flex-col px-5 pb-20 pt-28 max-md:justify-start md:h-full md:min-h-0 md:px-8 md:pb-16 md:pt-32 md:[justify-content:safe_center]"
           >
             <div className="grid items-center gap-6 md:grid-cols-[minmax(0,1.05fr)_minmax(240px,0.82fr)] md:gap-8">
               <div className="pointer-events-auto">
