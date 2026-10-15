@@ -28,8 +28,7 @@ export const site = {
     line1: "Drop the rushes.",
     line2Before: "Leave with the ",
     accent: "film",
-    support:
-      "Kinocut edits YouTube, shorts, podcasts, and ads for one flat monthly fee, one video at a time, and you can cancel anytime.",
+    support: "A full edit bay for one flat monthly fee.",
     subline: "Cancel anytime.",
     primary: "Start today",
     secondaryTitle: "Book a 15-min intro call",
@@ -242,31 +241,31 @@ export const site = {
     timecode: "00:00:44:18",
     title: "Loved by people who ship.",
     accent: "ship",
-    lede: "Placeholder words from the kind of teams we cut for. Replace them with real clients when the bay is live.",
+    lede: "",
     quotes: [
       {
         quote:
           "I stopped losing Sundays to the timeline. I send a folder, and a finished video is waiting before the next upload day.",
-        name: "Maya Chen",
-        role: "Science YouTube · placeholder",
+        name: "Mr. Macpherson",
+        role: "HappiDev",
       },
       {
         quote:
           "Our social team treats the bay like an in-house editor. The queue is clear, the cuts are sharp, and nobody is chasing notes in a chat thread.",
-        name: "Jordan Hale",
-        role: "Brand studio · placeholder",
+        name: "Mr. Godson",
+        role: "G-Tech Industries",
       },
       {
         quote:
           "Podcast clips used to die on a hard drive. Now every episode turns into a week of shorts without me opening an editor.",
-        name: "Sam Okonkwo",
-        role: "Interviewer · placeholder",
+        name: "Mr. Ibarakumo",
+        role: "Peace Gate Fashion",
       },
       {
         quote:
           "The launch slipped and we came back the next month. One email, and the bay still knew how we like our captions.",
-        name: "Lena Voss",
-        role: "Course studio · placeholder",
+        name: "Mr. Ramoni",
+        role: "International Breweries LTD.",
       },
     ],
     stats: [

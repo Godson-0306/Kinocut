@@ -75,7 +75,7 @@ export function Hero() {
 
           <div
             ref={contentRef}
-            className="pointer-events-none relative z-10 mx-auto flex min-h-[100svh] w-full max-w-[1240px] flex-col px-5 pb-20 pt-28 max-md:justify-start md:h-full md:min-h-0 md:px-8 md:pb-16 md:pt-32 md:[justify-content:safe_center]"
+            className="pointer-events-none relative z-10 mx-auto flex min-h-[100svh] w-full max-w-[1240px] flex-col px-5 pb-16 pt-24 max-md:justify-start md:h-full md:min-h-0 md:px-8 md:pb-8 md:pt-28 md:[justify-content:safe_center]"
           >
             <div className="grid items-center gap-6 md:grid-cols-[minmax(0,1.05fr)_minmax(240px,0.82fr)] md:gap-8">
               <div className="pointer-events-auto">
@@ -94,9 +94,9 @@ export function Hero() {
                     </span>
                   </span>
                 </h1>
-                <p className="rise rise-2 type-body mt-4 max-w-md text-white/90 md:mt-6">{site.hero.support}</p>
+                <p className="rise rise-2 type-body mt-5 max-w-md text-white/90 md:mt-6">{site.hero.support}</p>
                 <p className="rise rise-2 mt-2 text-blue-100">{site.hero.subline}</p>
-                <div className="rise rise-3 mt-5 flex flex-col gap-3 sm:flex-row sm:items-center md:mt-8">
+                <div className="rise rise-3 mt-6 flex flex-col gap-3 sm:flex-row sm:items-center md:mt-8">
                   <MagneticButton href={site.links.start} shine>
                     {site.hero.primary}
                   </MagneticButton>

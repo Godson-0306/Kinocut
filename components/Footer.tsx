@@ -46,7 +46,7 @@ export function Footer() {
           ))}
         </Marquee>
       </div>
-      <p className="px-5 pb-6 text-center text-sm text-ink-300">© {new Date().getFullYear()} Kinocut. Placeholder studio.</p>
+      <p className="px-5 pb-6 text-center text-sm text-ink-300">© {new Date().getFullYear()} Kinocut. A G-Tech Industries studio.</p>
     </footer>
   );
 }
