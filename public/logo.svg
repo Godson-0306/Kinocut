@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 868 660" fill="none" role="img">
+  <title>Kinocut</title>
+  <defs>
+    <mask id="sprocket">
+      <g fill="#fff">
+        <rect x="0" y="0" width="149" height="84" rx="32" />
+        <rect x="28" y="48" width="162" height="552" />
+        <rect x="0" y="546" width="149" height="110" rx="34" />
+      </g>
+      <g fill="#000">
+        <circle cx="31" cy="78" r="24" />
+        <circle cx="52" cy="177" r="36" />
+        <circle cx="-13" cy="327" r="91" />
+        <circle cx="52" cy="477" r="36" />
+        <circle cx="31" cy="576" r="24" />
+      </g>
+    </mask>
+  </defs>
+  <rect width="200" height="660" fill="#1F1F1F" mask="url(#sprocket)" />
+  <polygon points="203,58 554,58 706,319 203,319" fill="#1C4E6D" />
+  <polygon points="203,331 713,331 864,593 203,593" fill="#137652" />
+</svg>

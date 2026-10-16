@@ -138,6 +138,17 @@ export const site = {
         src: "/videos/reels/safe-peak.mp4",
         full: "/videos/reels/safe-peak-full.mp4",
       },
+      {
+        id: "capacity",
+        client: "Capacity Building",
+        title: "Ad",
+        category: "Ads",
+        timecode: "00:01:58:00",
+        aspect: "wide" as const,
+        poster: "/images/posters/reel-09.jpg",
+        src: "/videos/reels/capacity-building.mp4",
+        full: "/videos/reels/capacity-building-full.mp4",
+      },
     ],
   },
   benefits: {
@@ -408,6 +419,13 @@ export function serviceJsonLd() {
         url: site.url,
         email: site.email,
         description: site.meta.description,
+        logo: {
+          "@type": "ImageObject",
+          url: `${site.url}/logo.png`,
+          width: 512,
+          height: 389,
+          caption: site.name,
+        },
       },
       {
         "@type": "WebSite",

@@ -63,33 +63,51 @@ export function Showreel() {
         });
 
         let dragging = false;
+        let moved = false;
         let startX = 0;
         let startScroll = 0;
         const onDown = (event: PointerEvent) => {
           const trigger = tween.scrollTrigger;
-          if (!trigger) return;
+          if (!trigger || event.button !== 0) return;
           dragging = true;
+          moved = false;
           startX = event.clientX;
           startScroll = trigger.scroll();
-          pin.setPointerCapture(event.pointerId);
         };
         const onMove = (event: PointerEvent) => {
           const trigger = tween.scrollTrigger;
           if (!dragging || !trigger) return;
+          const dx = event.clientX - startX;
+          if (!moved && Math.abs(dx) < 6) return;
+          if (!moved) {
+            moved = true;
+            pin.setPointerCapture(event.pointerId);
+          }
           const width = Math.max(track.scrollWidth - pin.clientWidth, 1);
           const span = trigger.end - trigger.start;
-          trigger.scroll(startScroll - ((event.clientX - startX) / width) * span);
+          trigger.scroll(startScroll - (dx / width) * span);
         };
         const onUp = () => {
+          if (moved) {
+            const suppress = (clickEvent: Event) => {
+              clickEvent.preventDefault();
+              clickEvent.stopPropagation();
+            };
+            pin.addEventListener("click", suppress, true);
+            window.setTimeout(() => pin.removeEventListener("click", suppress, true), 0);
+          }
           dragging = false;
+          moved = false;
         };
         pin.addEventListener("pointerdown", onDown);
         pin.addEventListener("pointermove", onMove);
         pin.addEventListener("pointerup", onUp);
+        pin.addEventListener("pointercancel", onUp);
         return () => {
           pin.removeEventListener("pointerdown", onDown);
           pin.removeEventListener("pointermove", onMove);
           pin.removeEventListener("pointerup", onUp);
+          pin.removeEventListener("pointercancel", onUp);
         };
       });
     }, pin);
