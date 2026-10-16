@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 type Mode = "default" | "hover" | "play" | "drag";
@@ -8,17 +9,31 @@ type Mode = "default" | "hover" | "play" | "drag";
  * One playhead, written on pointermove. No trailing ring and no animation
  * frame loop, so the cursor stays locked to the pointer.
  */
+function nativeCursorPage(pathname: string) {
+  return pathname === "/login" || pathname.startsWith("/checkout/return");
+}
+
 export function Cursor() {
+  const pathname = usePathname();
   const head = useRef<HTMLDivElement>(null);
   const scale = useRef<HTMLDivElement>(null);
   const label = useRef<HTMLSpanElement>(null);
   const [enabled, setEnabled] = useState(false);
+  const [signupOpen, setSignupOpen] = useState(false);
+
+  useEffect(() => {
+    const sync = () => setSignupOpen(document.querySelector("[data-native-cursor]") != null);
+    sync();
+    const observer = new MutationObserver(sync);
+    observer.observe(document.body, { childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const fine = window.matchMedia("(pointer: fine) and (hover: hover)");
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
     const update = () => {
-      const on = fine.matches && !reduce.matches;
+      const on = fine.matches && !reduce.matches && !nativeCursorPage(pathname) && !signupOpen;
       setEnabled(on);
       document.documentElement.classList.toggle("has-custom-cursor", on);
     };
@@ -30,7 +45,7 @@ export function Cursor() {
       reduce.removeEventListener("change", update);
       document.documentElement.classList.remove("has-custom-cursor");
     };
-  }, []);
+  }, [pathname, signupOpen]);
 
   useEffect(() => {
     if (!enabled) return;

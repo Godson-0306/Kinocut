@@ -1,29 +1,38 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { formatNaira, formatPrice, site } from "@/content/site";
+import { startScroll, stopScroll } from "@/lib/scroll";
 import { cn } from "@/lib/utils";
 import { SectionHeading } from "./SectionHeading";
 import { MagneticButton } from "./MagneticButton";
 import { Waveform } from "./Waveform";
 
-const CURRENCY_KEY = "kinocut-currency";
 const RATE_URL = "https://open.er-api.com/v6/latest/USD";
-
-type Currency = "USD" | "NGN";
 
 export function Pricing() {
   const root = useRef<HTMLElement>(null);
-  const [currency, setCurrency] = useState<Currency>("USD");
+  const [inNigeria, setInNigeria] = useState(false);
   const [rate, setRate] = useState<number | null>(null);
   const [rateFailed, setRateFailed] = useState(false);
 
   useEffect(() => {
-    try {
-      if (sessionStorage.getItem(CURRENCY_KEY) === "NGN") setCurrency("NGN");
-    } catch {
-      /* private mode */
-    }
+    let cancelled = false;
+    fetch("/api/currency")
+      .then((response) => {
+        if (!response.ok) throw new Error("currency");
+        return response.json();
+      })
+      .then((data: { currency?: string }) => {
+        if (!cancelled && data.currency === "NGN") setInNigeria(true);
+      })
+      .catch(() => {
+        /* stay on dollars */
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -62,21 +71,15 @@ export function Pricing() {
     return () => observer.disconnect();
   }, []);
 
+  const [openPlan, setOpenPlan] = useState<(typeof site.pricing.plans)[number]["id"] | null>(null);
   const nairaPerDollar = rate != null && rate > 0 ? Math.round(rate) : null;
-  const showNaira = currency === "NGN" && nairaPerDollar != null;
-
-  const choose = (next: Currency) => {
-    if (next === "NGN" && nairaPerDollar == null) return;
-    setCurrency(next);
-    try {
-      sessionStorage.setItem(CURRENCY_KEY, next);
-    } catch {
-      /* private mode */
-    }
-  };
+  const showNaira = inNigeria && nairaPerDollar != null;
+  const rateBlocked = inNigeria && rateFailed;
 
   const priceLabel = (usd: number) =>
     showNaira && nairaPerDollar != null ? formatNaira(usd * nairaPerDollar) : formatPrice(usd);
+
+  const selected = openPlan ? site.pricing.plans.find((plan) => plan.id === openPlan) : undefined;
 
   return (
     <section ref={root} id="pricing" aria-labelledby="pricing-title" className="section-y relative overflow-hidden bg-ink-900 text-white">
@@ -93,25 +96,23 @@ export function Pricing() {
         />
         <p className="type-micro mt-6 text-center text-blue-300">{site.pricing.slots}</p>
 
-        <div role="radiogroup" aria-label="Currency" className="mx-auto mt-6 inline-flex w-full justify-center">
-          <div className="inline-flex rounded-pill border border-white/15 bg-white/5 p-1">
-            <CurrencyOption pressed={!showNaira} onClick={() => choose("USD")}>
-              Dollar
-            </CurrencyOption>
-            <CurrencyOption pressed={showNaira} disabled={nairaPerDollar == null} onClick={() => choose("NGN")}>
-              Naira
-            </CurrencyOption>
-          </div>
-        </div>
         {showNaira && nairaPerDollar != null ? (
-          <p className="type-micro mt-3 text-center text-blue-300">{formatNaira(nairaPerDollar)} per $1</p>
-        ) : rateFailed ? (
-          <p className="type-micro mt-3 text-center text-ink-300">Naira rate unavailable. Prices shown in dollars.</p>
+          <p className="type-micro mt-6 text-center text-blue-300">{formatNaira(nairaPerDollar)} per $1</p>
+        ) : inNigeria && rateFailed ? (
+          <p className="type-micro mt-6 text-center text-ink-300">Naira rate unavailable. Prices shown in dollars.</p>
         ) : null}
 
         <div className="mt-10 grid items-stretch gap-4 lg:grid-cols-3">
           {site.pricing.plans.map((plan) => (
-            <PlanCard key={plan.id} name={plan.name} price={priceLabel(plan.price)} features={plan.features} featured={plan.featured} sticker={"sticker" in plan ? plan.sticker : undefined} />
+            <PlanCard
+              key={plan.id}
+              name={plan.name}
+              price={priceLabel(plan.price)}
+              features={plan.features}
+              featured={plan.featured}
+              sticker={"sticker" in plan ? plan.sticker : undefined}
+              onJoin={() => setOpenPlan(plan.id)}
+            />
           ))}
         </div>
 
@@ -124,35 +125,16 @@ export function Pricing() {
           ))}
         </div>
       </div>
+      {selected ? (
+        <JoinDialog
+          planId={selected.id}
+          name={selected.name}
+          price={priceLabel(selected.price)}
+          blocked={rateBlocked}
+          onClose={() => setOpenPlan(null)}
+        />
+      ) : null}
     </section>
-  );
-}
-
-function CurrencyOption({
-  pressed,
-  disabled,
-  onClick,
-  children,
-}: {
-  pressed: boolean;
-  disabled?: boolean;
-  onClick: () => void;
-  children: string;
-}) {
-  return (
-    <button
-      type="button"
-      role="radio"
-      aria-checked={pressed}
-      disabled={disabled}
-      onClick={onClick}
-      className={cn(
-        "type-micro rounded-pill px-4 py-2 transition-colors duration-base disabled:cursor-not-allowed disabled:opacity-40",
-        pressed ? "bg-white text-ink" : "text-white",
-      )}
-    >
-      {children}
-    </button>
   );
 }
 
@@ -162,12 +144,14 @@ function PlanCard({
   features,
   featured,
   sticker,
+  onJoin,
 }: {
   name: string;
   price: string;
   features: readonly string[];
   featured: boolean;
   sticker?: string;
+  onJoin: () => void;
 }) {
   const article = (
     <article className={cn("relative flex h-full flex-col px-6 py-8", featured ? "rounded-[38px] bg-ink-900" : "rounded-panel border border-white/10 bg-white/5")}>
@@ -198,7 +182,7 @@ function PlanCard({
           </li>
         ))}
       </ul>
-      <MagneticButton href={site.links.join} shine={featured ? "loop" : undefined} className="mt-8 w-full">
+      <MagneticButton onClick={onJoin} shine={featured ? "loop" : undefined} className="mt-8 w-full">
         {site.pricing.cta}
       </MagneticButton>
     </article>
@@ -215,6 +199,120 @@ function PlanCard({
       </div>
     </div>
   );
+}
+
+function JoinDialog({
+  planId,
+  name,
+  price,
+  blocked,
+  onClose,
+}: {
+  planId: (typeof site.pricing.plans)[number]["id"];
+  name: string;
+  price: string;
+  blocked: boolean;
+  onClose: () => void;
+}) {
+  const nameRef = useRef<HTMLInputElement>(null);
+  const onCloseRef = useRef(onClose);
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState("");
+  const [mounted, setMounted] = useState(false);
+  onCloseRef.current = onClose;
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+    stopScroll();
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onCloseRef.current();
+    };
+    window.addEventListener("keydown", onKey);
+    nameRef.current?.focus();
+    return () => {
+      startScroll();
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [mounted]);
+
+  if (!mounted) return null;
+
+  const dialog = (
+    <div className="fixed inset-0 z-[90] flex items-center justify-center bg-ink-950/85 p-4 md:p-10" onClick={onClose}>
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="join-title"
+        data-native-cursor=""
+        className="w-full max-w-md rounded-panel bg-white p-8 text-ink shadow-card"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <p className="type-micro text-blue-700">{name}</p>
+        <h2 id="join-title" className="type-sub mt-3">
+          {site.pricing.cta}
+        </h2>
+        <p className="type-body mt-3 text-ink-600">
+          {price} {site.pricing.cadence}. The charge renews each month until you cancel it in Flutterwave.
+        </p>
+        {blocked ? (
+          <p className="type-body mt-6 text-ink-600">Naira rate unavailable. Prices shown in dollars.</p>
+        ) : (
+          <form
+            className="mt-8 space-y-4"
+            onSubmit={async (event) => {
+              event.preventDefault();
+              if (pending) return;
+              const form = new FormData(event.currentTarget);
+              setPending(true);
+              setError("");
+              try {
+                const response = await fetch("/api/checkout", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    plan: planId,
+                    name: form.get("name"),
+                    email: form.get("email"),
+                  }),
+                });
+                const data = (await response.json().catch(() => null)) as { url?: string; error?: string } | null;
+                if (response.ok && data?.url) {
+                  window.location.assign(data.url);
+                  return;
+                }
+                setError(data?.error === "rate" ? "Naira rate unavailable. Prices shown in dollars." : "Checkout could not start. Try again in a moment.");
+              } catch {
+                setError("Checkout could not start. Try again in a moment.");
+              }
+              setPending(false);
+            }}
+          >
+            <label className="block">
+              <span className="type-micro text-blue-700">Name</span>
+              <input ref={nameRef} className="field mt-2" name="name" autoComplete="name" required maxLength={80} placeholder="Your name" />
+            </label>
+            <label className="block">
+              <span className="type-micro text-blue-700">Email</span>
+              <input className="field mt-2" type="email" name="email" autoComplete="email" required maxLength={120} placeholder="you@studio.com" />
+            </label>
+            {error ? <p className="text-sm text-ink-600">{error}</p> : null}
+            <MagneticButton type="submit" className={cn("w-full", pending && "pointer-events-none opacity-70")}>
+              {pending ? "Starting checkout" : "Continue"}
+            </MagneticButton>
+          </form>
+        )}
+        <button type="button" className="type-micro mt-4 text-blue-700" data-cursor="hover" onClick={onClose}>
+          Close
+        </button>
+      </div>
+    </div>
+  );
+
+  return createPortal(dialog, document.body);
 }
 
 function DrawCheck() {

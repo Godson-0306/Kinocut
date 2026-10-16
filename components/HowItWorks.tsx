@@ -109,7 +109,7 @@ export function HowItWorks() {
           ))}
         </Marquee>
         <Marquee reverse label="Formats we cut, continued">
-          {[...site.how.pills].reverse().map((pill, index) => (
+          {site.how.pills.map((pill, index) => (
             <span key={pill} className="inline-flex items-center gap-2 rounded-pill border border-white/15 bg-white/5 px-4 py-2 text-white">
               <span className={cn("h-2 w-2 rounded-sm", index % 2 ? "bg-blue-300" : "bg-green-300")} />
               <span className="type-micro">{pill}</span>

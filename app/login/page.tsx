@@ -3,7 +3,7 @@ import { LoginForm } from "@/components/LoginForm";
 
 export const metadata: Metadata = {
   title: "Login",
-  description: "Client login for the Kinocut edit bay. The door is not connected yet.",
+  description: "Sign in to the Kinocut edit bay.",
   robots: { index: false, follow: false },
 };
 
