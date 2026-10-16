@@ -13,8 +13,11 @@ export function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
   const frameRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const moveFrame = useRef(0);
 
   useLayoutEffect(() => {
+    const finePointer = window.matchMedia("(pointer: fine) and (hover: hover)").matches;
+    moveFrame.current = finePointer ? 0 : -1;
     const { gsap } = registerGsap();
     const ctx = gsap.context(() => {
       // Headline reveal is CSS. This timeline only shrinks the video frame into a card.
@@ -41,16 +44,24 @@ export function Hero() {
       });
     }, sectionRef);
 
-    return () => ctx.revert();
+    return () => {
+      if (moveFrame.current > 0) cancelAnimationFrame(moveFrame.current);
+      ctx.revert();
+    };
   }, []);
 
   const onMove = (event: React.MouseEvent<HTMLElement>) => {
-    if (!window.matchMedia("(pointer: fine) and (hover: hover)").matches) return;
-    const rect = event.currentTarget.getBoundingClientRect();
-    const x = (event.clientX - rect.left) / rect.width - 0.5;
-    const y = (event.clientY - rect.top) / rect.height - 0.5;
-    event.currentTarget.style.setProperty("--mx", x.toFixed(4));
-    event.currentTarget.style.setProperty("--my", y.toFixed(4));
+    if (moveFrame.current) return;
+    const target = event.currentTarget;
+    const point = { x: event.clientX, y: event.clientY };
+    moveFrame.current = requestAnimationFrame(() => {
+      moveFrame.current = 0;
+      const rect = target.getBoundingClientRect();
+      const x = (point.x - rect.left) / rect.width - 0.5;
+      const y = (point.y - rect.top) / rect.height - 0.5;
+      target.style.setProperty("--mx", x.toFixed(3));
+      target.style.setProperty("--my", y.toFixed(3));
+    });
   };
 
   return (

@@ -18,7 +18,7 @@ export function SmoothScroll() {
 
       const { gsap, ScrollTrigger } = registerGsap();
       const lenis = new Lenis({
-        lerp: reduce ? 1 : 0.085,
+        lerp: reduce ? 1 : 0.2,
         smoothWheel: !reduce,
         anchors: true,
       });
@@ -37,7 +37,6 @@ export function SmoothScroll() {
         lenis.raf(time * 1000);
       };
       gsap.ticker.add(raf);
-      gsap.ticker.lagSmoothing(0);
 
       setScrollController({
         to: (target) => lenis.scrollTo(target, { duration: reduce ? 0 : 1.1 }),

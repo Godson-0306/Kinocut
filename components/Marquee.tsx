@@ -33,36 +33,46 @@ export function Marquee({
     let last = performance.now();
     let visible = true;
     let running = true;
+    let loopWidth = 0;
+
+    const measure = () => {
+      const gap = Number.parseFloat(getComputedStyle(trackEl).columnGap || "0") || 0;
+      loopWidth = firstEl.offsetWidth + gap;
+    };
+    measure();
 
     const tick = (now: number) => {
-      if (!running) return;
+      frame = 0;
+      if (!running || !visible) return;
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
-      if (visible) {
-        const gap = Number.parseFloat(getComputedStyle(trackEl).columnGap || "0") || 0;
-        const loopWidth = firstEl.offsetWidth + gap;
-        if (loopWidth > 0) {
-          const boost = Math.min(Math.abs(scrollState.velocity) * 0.9, 420);
-          const sign = (reverse ? -1 : 1) * (scrollState.direction >= 0 ? 1 : -1);
-          offset -= (70 + boost) * sign * dt;
-          while (offset <= -loopWidth) offset += loopWidth;
-          while (offset > 0) offset -= loopWidth;
-          trackEl.style.transform = `translate3d(${offset}px,0,0)`;
-        }
+      if (loopWidth > 0) {
+        const boost = Math.min(Math.abs(scrollState.velocity) * 0.9, 420);
+        const sign = (reverse ? -1 : 1) * (scrollState.direction >= 0 ? 1 : -1);
+        offset -= (70 + boost) * sign * dt;
+        while (offset <= -loopWidth) offset += loopWidth;
+        while (offset > 0) offset -= loopWidth;
+        trackEl.style.transform = `translate3d(${offset}px,0,0)`;
       }
       frame = requestAnimationFrame(tick);
     };
 
     const observer = new IntersectionObserver(([entry]) => {
       visible = Boolean(entry?.isIntersecting);
+      if (visible && running && !frame) {
+        last = performance.now();
+        frame = requestAnimationFrame(tick);
+      }
     });
     observer.observe(trackEl);
     frame = requestAnimationFrame(tick);
+    window.addEventListener("resize", measure);
 
     return () => {
       running = false;
       cancelAnimationFrame(frame);
       observer.disconnect();
+      window.removeEventListener("resize", measure);
     };
   }, [reverse]);
 

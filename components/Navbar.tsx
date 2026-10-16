@@ -43,8 +43,10 @@ export function Navbar() {
 
   useEffect(() => {
     return subscribeScroll(({ y, direction }) => {
-      if (!interior) setSolid(y > window.innerHeight * 0.72);
-      setHidden(!openRef.current && y > 80 && direction > 0);
+      const nextSolid = interior || y > window.innerHeight * 0.72;
+      const nextHidden = !openRef.current && y > 80 && direction > 0;
+      setSolid((current) => (current === nextSolid ? current : nextSolid));
+      setHidden((current) => (current === nextHidden ? current : nextHidden));
     });
   }, [interior]);
 

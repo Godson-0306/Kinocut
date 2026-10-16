@@ -440,7 +440,6 @@
     z-index: 60;
     pointer-events: none;
     opacity: 0.045;
-    mix-blend-mode: overlay;
     background-image: url("/grain.png");
     background-size: 180px 180px;
   }
@@ -482,6 +481,7 @@
 
   .aurora-blob {
     animation: drift 16s var(--ease) infinite;
+    will-change: transform;
   }
 
   .aurora-blob-b {
@@ -904,7 +904,7 @@
     transform: translate3d(0, 0, 0) scale(1);
   }
   50% {
-    transform: translate3d(6%, -5%, 0) scale(1.08);
+    transform: translate3d(6%, -5%, 0);
   }
 }
 

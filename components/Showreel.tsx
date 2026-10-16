@@ -54,7 +54,7 @@ export function Showreel() {
             start: "top top",
             end: () => `+=${Math.max(track.scrollWidth - pin.clientWidth, 1)}`,
             pin: true,
-            scrub: 1,
+            scrub: 0.4,
             invalidateOnRefresh: true,
             onUpdate: (self) => {
               progress.current = self.progress;
