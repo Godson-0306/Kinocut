@@ -1,6 +1,7 @@
 "use client";
 
-import { useLayoutEffect, useRef } from "react";
+import Image from "next/image";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { registerGsap } from "@/lib/gsap";
 import { onIntroDone } from "@/lib/intro";
 import { Waveform } from "./Waveform";
@@ -14,6 +15,28 @@ const clips = [
 
 export function EditorMockup() {
   const root = useRef<HTMLDivElement>(null);
+  const monitor = useRef<HTMLVideoElement>(null);
+  const [posterOnly, setPosterOnly] = useState(false);
+
+  useEffect(() => {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) setPosterOnly(true);
+  }, []);
+
+  useEffect(() => {
+    const video = monitor.current;
+    if (!video || posterOnly) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry) return;
+        if (entry.isIntersecting) video.play().catch(() => setPosterOnly(true));
+        else video.pause();
+      },
+      { threshold: 0.2 },
+    );
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, [posterOnly]);
 
   useLayoutEffect(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -69,10 +92,26 @@ export function EditorMockup() {
           </div>
           <span className="type-micro text-blue-300">00:00:04:12</span>
         </header>
-        <div className="program-monitor relative mt-2 aspect-video overflow-hidden rounded-[20px] bg-ink-950/70">
-          <div className="absolute inset-0 bg-aurora opacity-50" />
-          <p className="type-micro absolute left-3 top-3 text-white">Program</p>
-          <Waveform bars={36} className="absolute bottom-3 left-3 right-3 text-white/85" />
+        <div className="program-monitor relative mt-2 aspect-video overflow-hidden rounded-[20px] bg-ink-950">
+          {posterOnly ? (
+            <Image src="/videos/hero-monitor.jpg" alt="" fill className="object-cover" sizes="(min-width: 768px) 42vw, 100vw" />
+          ) : (
+            <video
+              ref={monitor}
+              className="absolute inset-0 h-full w-full object-cover"
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              poster="/videos/hero-monitor.jpg"
+              aria-hidden="true"
+              onError={() => setPosterOnly(true)}
+            >
+              <source src="/videos/hero-monitor.mp4" type="video/mp4" />
+            </video>
+          )}
+          <p className="type-micro absolute left-3 top-3 text-white [text-shadow:0_1px_8px_rgb(0_0_0_/_0.65)]">Program</p>
         </div>
         <div className="timeline-track relative mt-3 px-1 pb-2">
           <div className="mb-2 flex justify-between text-blue-100">
