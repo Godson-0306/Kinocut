@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Inter } from "next/font/google";
-import Script from "next/script";
 import { palette } from "@/content/tokens";
 import { serviceJsonLd, site } from "@/content/site";
 import { Cursor } from "@/components/Cursor";
@@ -69,6 +68,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${bricolage.variable} ${inter.variable} no-js`} suppressHydrationWarning>
       <head>
+        <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA_ID}');`,
+          }}
+        />
         <link rel="preload" as="image" href="/videos/hero-poster.jpg" fetchPriority="high" />
         <script dangerouslySetInnerHTML={{ __html: bootScript }} />
       </head>
@@ -83,10 +88,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {children}
         <Footer />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceJsonLd()) }} />
-        <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} strategy="afterInteractive" />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA_ID}');`}
-        </Script>
       </body>
     </html>
   );
