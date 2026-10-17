@@ -302,11 +302,27 @@ export const site = {
     notes: [
       {
         title: "Every plan",
-        body: "An unlimited queue you can reorder until a request starts. One active request at a time. The next starts when you approve, or after 3 business days of silence. Turnaround is business days from a complete brief and footage. Brand kit at onboarding. You own the final files.",
+        points: [
+          "An unlimited queue you can reorder until a request starts",
+          "One active request at a time",
+          "The next starts when you approve, or after 3 business days of silence",
+          "Turnaround is business days from a complete brief and footage",
+          "Brand kit at onboarding",
+          "You own the final files",
+        ],
       },
       {
         title: "How a request counts",
-        body: "One request is one finished video, plus up to 3 resizes. Up to 5 clips from one source count as one request. Send notes as one message with timestamps. A new direction after approval is a new request. Work over the length limit is split or quoted. Shoots, scripting, voiceover talent, 3D, and music outside the library are not included. Agencies reselling the work need a white-label plan. Explainers are quoted as separate projects so they don't hold up your queue.",
+        points: [
+          "One request is one finished video, plus up to 3 resizes",
+          "Up to 5 clips from one source count as one request",
+          "Send notes as one message with timestamps",
+          "A new direction after approval is a new request",
+          "Work over the length limit is split or quoted",
+          "Shoots, scripting, voiceover talent, 3D, and music outside the library are not included",
+          "Agencies reselling the work need a white-label plan",
+          "Explainers are quoted as separate projects so they don't hold up your queue",
+        ],
       },
     ],
   },

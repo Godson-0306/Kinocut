@@ -116,11 +116,24 @@ export function Pricing() {
           ))}
         </div>
 
-        <div className="mt-8 grid gap-4 md:grid-cols-2">
+        <div className="mt-8 grid items-stretch gap-4 md:grid-cols-2">
           {site.pricing.notes.map((card) => (
-            <article key={card.title} className="rounded-card border border-white/10 bg-white/5 p-6">
+            <article key={card.title} className="flex h-full flex-col rounded-card border border-white/10 bg-white/5 p-6">
               <h3 className="type-sub text-white">{card.title}</h3>
-              <p className="type-body mt-3 text-ink-300">{card.body}</p>
+              <ul className="mt-5 grid gap-3.5">
+                {card.points.map((point, index) => (
+                  <li key={point} className="flex items-start gap-3">
+                    <span
+                      aria-hidden="true"
+                      className={cn(
+                        "mt-[0.45rem] h-2 w-2 shrink-0 rotate-45 ring-4",
+                        index % 2 === 0 ? "bg-blue-500 ring-blue-500/25" : "bg-green-300 ring-green-300/20",
+                      )}
+                    />
+                    <span className="text-sm leading-relaxed text-ink-300">{point}</span>
+                  </li>
+                ))}
+              </ul>
             </article>
           ))}
         </div>
