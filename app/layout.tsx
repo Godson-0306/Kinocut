@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Inter } from "next/font/google";
+import Script from "next/script";
 import { palette } from "@/content/tokens";
 import { serviceJsonLd, site } from "@/content/site";
 import { Cursor } from "@/components/Cursor";
@@ -60,6 +61,8 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
+const GA_ID = "G-1SB1EJ5DXP";
+
 const bootScript = `try{var reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;var seen=sessionStorage.getItem("kinocut-intro-seen");document.documentElement.classList.add("js");document.documentElement.classList.remove("no-js");if(reduce||seen){document.documentElement.dataset.intro="done";document.documentElement.dataset.skipIntro="1";}else{document.documentElement.dataset.intro="play";}}catch(e){document.documentElement.dataset.intro="done";document.documentElement.dataset.skipIntro="1";}`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -80,6 +83,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {children}
         <Footer />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceJsonLd()) }} />
+        <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} strategy="afterInteractive" />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA_ID}');`}
+        </Script>
       </body>
     </html>
   );
