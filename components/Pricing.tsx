@@ -82,7 +82,7 @@ export function Pricing() {
   const selected = openPlan ? site.pricing.plans.find((plan) => plan.id === openPlan) : undefined;
 
   return (
-    <section ref={root} id="pricing" aria-labelledby="pricing-title" className="section-y relative overflow-hidden bg-ink-900 text-white">
+    <section ref={root} id="pricing" aria-labelledby="pricing-title" className="section-y relative scroll-mt-28 overflow-hidden bg-ink-900 text-white">
       <Waveform bars={64} className="pointer-events-none absolute left-0 right-0 top-1/2 h-24 -translate-y-1/2 text-blue-300/30" />
       <div className="relative mx-auto max-w-[1100px] px-5 md:px-8">
         <SectionHeading
@@ -108,6 +108,7 @@ export function Pricing() {
               key={plan.id}
               name={plan.name}
               price={priceLabel(plan.price)}
+              cadence={site.pricing.cadence}
               features={plan.features}
               featured={plan.featured}
               sticker={"sticker" in plan ? plan.sticker : undefined}
@@ -154,6 +155,7 @@ export function Pricing() {
 function PlanCard({
   name,
   price,
+  cadence,
   features,
   featured,
   sticker,
@@ -161,6 +163,7 @@ function PlanCard({
 }: {
   name: string;
   price: string;
+  cadence?: string;
   features: readonly string[];
   featured: boolean;
   sticker?: string;
@@ -184,7 +187,7 @@ function PlanCard({
           >
             {price}
           </p>
-          <p className="mb-1 text-ink-300">{site.pricing.cadence}</p>
+          {cadence ? <p className="mb-1 text-ink-300">{cadence}</p> : null}
         </div>
       </div>
       <ul className="plan-features mt-6 grid flex-1 gap-3">

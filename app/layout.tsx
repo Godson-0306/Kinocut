@@ -29,7 +29,6 @@ export const metadata: Metadata = {
     template: `%s · ${site.name}`,
   },
   description: site.meta.description,
-  alternates: { canonical: "/" },
   openGraph: {
     title: site.meta.title,
     description: site.meta.description,
@@ -46,6 +45,13 @@ export const metadata: Metadata = {
     images: ["/opengraph-image"],
   },
   robots: { index: true, follow: true },
+  icons: {
+    icon: [
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
+    apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
+  },
 };
 
 export const viewport: Viewport = {

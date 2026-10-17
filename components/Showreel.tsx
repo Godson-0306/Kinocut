@@ -6,7 +6,6 @@ import { ArrowLeft, ArrowRight, X } from "lucide-react";
 import { site } from "@/content/site";
 import { registerGsap } from "@/lib/gsap";
 import { cn } from "@/lib/utils";
-import { BeforeAfterSlider } from "./BeforeAfterSlider";
 import { SectionHeading } from "./SectionHeading";
 
 type NetworkInformation = { saveData?: boolean; effectiveType?: string };
@@ -163,9 +162,6 @@ export function Showreel() {
             ))}
           </div>
         </div>
-      </div>
-      <div className="mx-auto max-w-[1100px] px-5 pb-24 md:px-8">
-        <BeforeAfterSlider />
       </div>
       {watching ? (
         <div

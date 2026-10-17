@@ -5,6 +5,7 @@ import { site } from "@/content/site";
 export const metadata: Metadata = {
   title: "Terms",
   description: "Placeholder terms for the Kinocut edit bay subscription.",
+  alternates: { canonical: `${site.url}/terms` },
 };
 
 export default function TermsPage() {

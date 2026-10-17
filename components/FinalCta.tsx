@@ -44,7 +44,7 @@ export function FinalCta() {
           </h2>
           <p className="type-body measure mt-6 text-white/90">{site.final.lede}</p>
           <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
-            <MagneticButton href={site.links.calendar} variant="inverted" shine external>
+            <MagneticButton href={site.links.pricing} variant="inverted" shine>
               {site.final.cta}
             </MagneticButton>
             <a href={site.links.email} className="type-micro text-blue-50 underline-offset-4 hover:underline">

@@ -5,6 +5,7 @@ import { site } from "@/content/site";
 export const metadata: Metadata = {
   title: "Privacy",
   description: "Placeholder privacy notes for the Kinocut marketing site.",
+  alternates: { canonical: `${site.url}/privacy` },
 };
 
 export default function PrivacyPage() {

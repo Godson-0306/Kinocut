@@ -1,42 +1,29 @@
 # Kinocut
 
-> Kinocut is a subscription edit bay. It edits YouTube videos, shorts, podcast clips, and ads for one flat monthly fee, one request at a time. Cancel anytime.
+> Kinocut is a remote video-editing subscription. Creators and teams send footage and receive a finished cut for one flat monthly fee.
 
-## Offer
+Kinocut edits YouTube, shorts, podcasts, interviews, vlogs, and ads. One request is active at a time. The queue can hold more, and the next request starts when the current cut is approved, or after 3 business days of silence. Cancel anytime. The client owns the final files.
 
-- Three monthly plans: Spark $499, Momentum $999, Studio $2,499.
-- One active request at a time. An unlimited queue you can reorder until a request starts. The next starts when you approve, or after 3 business days of silence.
-- Short-form averages 48 hours. Long-form is 4 business days on Spark, 3 on Momentum, and 48 hours on Studio.
-- Revision rounds: 1 on Spark, 2 on Momentum, 2 plus minor tweaks on Studio.
-- One request is one finished video plus up to 3 resizes, or up to 5 clips from one source.
-- Brand kit at onboarding. You own the final files.
-- Cancel before the next bill. The month already paid stays usable until it ends.
-- Pricing: https://kinocut.pro/#pricing
+## Plans
+
+Prices are in US dollars per month. Visitors in Nigeria are shown and charged the naira equivalent at the daily rate.
+
+- Spark: $499 per month. Short-form up to 60 seconds. Interviews and vlogs up to 5 minutes. Average short-form turnaround is 48 hours. Long-form is 4 business days. 1 revision round.
+- Momentum: $999 per month. Short-form up to 90 seconds. Interviews, vlogs, YouTube, and demos up to 15 minutes. Long-form is 3 business days. 2 revision rounds.
+- Studio: $2,499 per month. Interviews, vlogs, YouTube, and demos up to 20 minutes. Custom motion graphics up to 30 seconds. Short-form and long-form average 48 hours. 2 revision rounds, plus free minor tweaks. Explainers are quoted separately, with a 10% discount.
+
+A request is one finished video plus up to 3 resizes. Up to 5 clips from one source count as one request. Shoots, scripting, voiceover talent, 3D, and music outside the licensed library are not included.
 
 ## How it works
 
-1. Subscribe. Pick the bay. One queue, no hourly meter. Cancel before the next bill.
-2. Send footage. A Google Drive, Dropbox, Frame.io, or WeTransfer link is enough, plus one sentence about what the video must do.
-3. Receive edits. A finished cut comes back, usually within 48 hours, with captions, grade, and sound cleaned up.
-
-How it works: https://kinocut.pro/#how
-
-## Who it is for
-
-YouTubers, podcasters, agencies, startups, course creators, and social media teams who publish every week.
-
-## What is not included
-
-Kinocut does not shoot. It does not build 3D scenes, feature-length films, or heavy VFX such as set extensions, creature work, or frame-by-frame cleanup.
-
-## Answers
-
-Twelve questions on turnaround, footage handoff, the first week, request limits, canceling, long-form and shorts, software, revisions, exclusions, music licensing, refunds, and a single busy month:
-
-https://kinocut.pro/#faq
+1. Subscribe to one plan.
+2. Send a Google Drive, Dropbox, Frame.io, or WeTransfer link with a short brief.
+3. Receive the finished cut, usually within 48 hours for short-form once the brief and footage are complete.
 
 ## Contact
 
-- Email: hello@kinocut.studio
-- Book a 15-minute intro: https://kinocut.pro/#book
-- Site: https://kinocut.pro/
+- Site: https://kinocut.pro
+- Plans: https://kinocut.pro/#pricing
+- Email: hello@gmail.pro
+- Terms: https://kinocut.pro/terms
+- Privacy: https://kinocut.pro/privacy
