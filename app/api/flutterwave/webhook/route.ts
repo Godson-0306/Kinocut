@@ -23,7 +23,10 @@ export async function POST(request: Request) {
   try {
     const charge = await verifyTransaction(String(id));
     if (!charge) return new Response("ok");
-    if (charge.email) await openBayFromCharge(charge, String(id));
+    if (charge.email) {
+      const opened = await openBayFromCharge(charge, String(id));
+      if (!opened?.notified) return new Response("unnotified", { status: 400 });
+    }
     console.info("Flutterwave subscription verified", charge.plan, charge.currency);
     return new Response("ok");
   } catch {

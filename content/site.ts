@@ -3,7 +3,7 @@ import { palette } from "./tokens";
 export const site = {
   name: "Kinocut",
   url: "https://kinocut.pro",
-  email: "hello@kinocut.studio",
+  email: "hello@kinocut.pro",
   location: "A remote edit bay. Worldwide turnaround.",
   meta: {
     title: "Kinocut — Unlimited video editing for one monthly fee",
@@ -18,7 +18,7 @@ export const site = {
     login: "/login",
     /** Replace with your Calendly (or other) scheduling link. */
     calendar: "https://calendly.com/",
-    email: "mailto:hello@kinocut.studio",
+    email: "mailto:hello@kinocut.pro",
     terms: "/terms",
     privacy: "/privacy",
     home: "/",
@@ -257,7 +257,6 @@ export const site = {
           "Short-form, clips, UGC, and ads up to 60s",
           "Interviews and vlogs up to 5 minutes",
           "YouTube, demos, podcasts, and motion graphics not included",
-          "Explainers not included",
           "Short-form averages 48 hours",
           "Long-form in 4 business days",
           "1 revision round",
@@ -293,7 +292,7 @@ export const site = {
           "Interviews, vlogs, YouTube, and demos up to 20 minutes",
           "Podcasts and webinars from up to 90 minutes of footage",
           "Custom motion graphics up to 30s",
-          "Explainers are quoted separately, with a discount",
+          "Explainers are quoted separately, with a 10% discount",
           "Short-form and long-form average 48 hours",
           "2 revision rounds, plus free minor tweaks",
         ],
@@ -407,7 +406,7 @@ export const site = {
   login: {
     title: "The bay door",
     lede: "Sign in with the email on your subscription.",
-    success: "Noted. The client bay is not connected yet. Email hello@kinocut.studio and we will open the door.",
+    success: "Noted. The client bay is not connected yet. Email hello@kinocut.pro and we will open the door.",
   },
 } as const;
 

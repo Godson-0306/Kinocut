@@ -2,6 +2,7 @@ import { ObjectId, type Filter } from "mongodb";
 import { formatNaira, formatPrice } from "@/content/site";
 import { planById, type PlanId, type VerifiedCharge } from "@/lib/billing";
 import { db } from "@/lib/db";
+import { sendPaymentEmails } from "@/lib/mail";
 import { hashPassword } from "@/lib/passwords";
 
 export type Role = "client" | "staff";
@@ -33,6 +34,7 @@ type BayDoc = {
   txRef: string;
   transactionId: string;
   createdAt: Date;
+  notifiedAt?: Date;
 };
 
 type RequestDoc = {
@@ -184,7 +186,17 @@ export async function openBayFromCharge(charge: VerifiedCharge, transactionId = 
     },
     { upsert: true },
   );
-  return { hasPassword: Boolean(user.passwordHash) };
+  const bay = await bayCollection.findOne({ txRef: charge.txRef });
+  if (!bay) return null;
+  let notified = Boolean(bay.notifiedAt);
+  if (!notified) {
+    const sent = await sendPaymentEmails(charge, transactionId || bay.transactionId).catch(() => false);
+    if (sent) {
+      await bayCollection.updateOne({ _id: bay._id, notifiedAt: { $exists: false } }, { $set: { notifiedAt: new Date() } });
+      notified = true;
+    }
+  }
+  return { hasPassword: Boolean(user.passwordHash), notified };
 }
 
 export async function setPasswordForEmail(email: string, password: string) {
