@@ -2,12 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 import { site } from "@/content/site";
+import type { BookingDay } from "@/lib/cal";
 import { AuroraBlob } from "./AuroraBlob";
+import { BookingCalendar } from "./BookingCalendar";
 import { Clapperboard } from "./Clapperboard";
 import { MagneticButton } from "./MagneticButton";
 import { Timecode } from "./Timecode";
 
-export function FinalCta() {
+export function FinalCta({ days }: { days: BookingDay[] }) {
   const frame = useRef<HTMLDivElement>(null);
   const [shut, setShut] = useState(false);
 
@@ -52,22 +54,8 @@ export function FinalCta() {
             </a>
           </div>
         </div>
-        <div className="rounded-panel border border-white/20 bg-white/10 p-5 backdrop-blur-md md:p-7">
-          <p className="type-micro text-blue-50">Calendar</p>
-          <p className="mt-3 text-white/85">{site.final.calendarNote}</p>
-          <div className="mt-6 grid grid-cols-2 gap-3">
-            {site.final.slots.map((slot) => (
-              <a
-                key={slot}
-                href={site.links.calendar}
-                target="_blank"
-                rel="noreferrer"
-                className="rounded-2xl bg-white px-3 py-4 text-center text-ink"
-              >
-                {slot}
-              </a>
-            ))}
-          </div>
+        <div className="rounded-panel bg-ink-950 p-5 text-white md:p-7">
+          <BookingCalendar days={days} note={site.final.calendarNote} />
         </div>
       </div>
     </section>

@@ -10,10 +10,7 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   return (
-    <LegalDocument
-      title="Privacy"
-      lede="Placeholder privacy notes for this marketing site. Update them when you add analytics, accounts, or payment."
-    >
+    <LegalDocument title="Privacy">
       <section>
         <h2 className="type-sub text-ink">What this site stores</h2>
         <p className="type-body mt-3">
@@ -23,7 +20,7 @@ export default function PrivacyPage() {
       <section>
         <h2 className="type-sub text-ink">Email and booking</h2>
         <p className="type-body mt-3">
-          If you email {site.email}, we receive whatever you send. The calendar buttons open a scheduling link. That service has its own privacy policy, and you should name it here when you connect it.
+          If you email {site.email}, we receive whatever you send. Booking a time sends your name, email, and notes to Cal.com, which sends the confirmation. Cal.com has its own privacy policy.
         </p>
       </section>
       <section>

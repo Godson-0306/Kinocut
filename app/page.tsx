@@ -11,13 +11,15 @@ import { Pricing } from "@/components/Pricing";
 import { Showreel } from "@/components/Showreel";
 import { Testimonials } from "@/components/Testimonials";
 import { site } from "@/content/site";
+import { introCalendar } from "@/lib/cal";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
   description: site.meta.description,
 };
 
-export default function HomePage() {
+export default async function HomePage() {
+  const days = await introCalendar();
   return (
     <>
       <Preloader />
@@ -31,7 +33,7 @@ export default function HomePage() {
         <Testimonials />
         <Pricing />
         <Faq />
-        <FinalCta />
+        <FinalCta days={days} />
       </main>
     </>
   );

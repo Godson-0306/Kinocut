@@ -10,10 +10,7 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <LegalDocument
-      title="Terms of the bay"
-      lede="This is placeholder copy so the footer link has a real page. Replace it with counsel-reviewed terms before you take payment."
-    >
+    <LegalDocument title="Terms of the bay">
       <section>
         <h2 className="type-sub text-ink">The service</h2>
         <p className="type-body mt-3">
@@ -29,7 +26,7 @@ export default function TermsPage() {
       <section>
         <h2 className="type-sub text-ink">Your files</h2>
         <p className="type-body mt-3">
-          You own the masters we export for you. You promise you have the right to the footage, music, and brand assets you send. We license stock and commercial music only for the cuts we deliver.
+          You own the masters we export for you. We promise you have the right to the footage, music, and brand assets you send. We license stock and commercial music only for the cuts we deliver.
         </p>
       </section>
       <section>

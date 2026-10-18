@@ -24,6 +24,7 @@ A request is one finished video plus up to 3 resizes. Up to 5 clips from one sou
 
 - Site: https://kinocut.pro
 - Plans: https://kinocut.pro/#pricing
-- Email: hello@gmail.pro
+- Email: hello@kinocut.pro
+- Book a 15-minute intro: https://cal.com/promise-maduagwu-mmrynm/15min
 - Terms: https://kinocut.pro/terms
 - Privacy: https://kinocut.pro/privacy

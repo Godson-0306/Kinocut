@@ -3,7 +3,7 @@ import { palette } from "./tokens";
 export const site = {
   name: "Kinocut",
   url: "https://kinocut.pro",
-  email: "hello@gmail.pro",
+  email: "hello@kinocut.pro",
   location: "A remote edit bay. Worldwide turnaround.",
   meta: {
     title: "Kinocut — Unlimited video editing for one monthly fee",
@@ -16,9 +16,8 @@ export const site = {
     book: "/#book",
     pricing: "/#pricing",
     login: "/login",
-    /** Replace with your Calendly (or other) scheduling link. */
-    calendar: "https://calendly.com/",
-    email: "mailto:hello@gmail.pro",
+    calendar: "https://cal.com/promise-maduagwu-mmrynm/15min",
+    email: "mailto:hello@kinocut.pro",
     terms: "/terms",
     privacy: "/privacy",
     home: "/",
@@ -85,7 +84,7 @@ export const site = {
     ],
     founder: {
       kicker: "The bay",
-      body: "Kinocut is a small bay of editors, colorists, and motion designers. You get a dedicated queue, not a ticket number. We work remote, across time zones, so a file sent tonight can be waiting with coffee.",
+      body: "Kinocut is a small bay of editors, colorists, and motion designers. We get a dedicated queue, not a ticket number. We work remote, across time zones, so a file sent tonight can be waiting with coffee.",
       seats: [
         { initials: "ED", label: "Edit", className: "bg-blue-500 text-white" },
         { initials: "CO", label: "Color", className: "bg-green-500 text-white" },
@@ -389,8 +388,7 @@ export const site = {
     lede: "Book a 15-minute intro. We will learn the channel, open the queue, and cut the first one.",
     cta: "See the plans",
     emailLabel: "Or write to the bay",
-    calendarNote: "Placeholder slots. Paste your Calendly embed here when scheduling is live.",
-    slots: ["Tue · 10:30", "Tue · 14:00", "Wed · 09:15", "Thu · 16:40"],
+    calendarNote: "Monday to Saturday, 5pm to 11pm Lagos.",
   },
   footer: {
     stickers: [
@@ -406,7 +404,7 @@ export const site = {
   login: {
     title: "The bay door",
     lede: "Sign in with the email on your subscription.",
-    success: "Noted. The client bay is not connected yet. Email hello@gmail.pro and we will open the door.",
+    success: "Noted. The client bay is not connected yet. Email hello@kinocut.pro and we will open the door.",
   },
 } as const;
 

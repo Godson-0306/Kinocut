@@ -27,9 +27,11 @@ export default async function StaffRequestPage({
   const request = await requestFor(user, requestId).catch(() => null);
   if (!request || request.bayId !== bayId) redirect(`/bays/${bayId}`);
 
+  const notice = query.error === "note" ? "A note needs a few words." : query.error === "delivery" ? "Delivery needs one finished-video link." : undefined;
+
   return (
-    <BayShell kicker="Request" title={request.title}>
-      <RequestPanel request={request} mode="staff" notice={query.error === "note" ? "A note needs a few words." : undefined} />
+    <BayShell kicker="Request" title={request.title} wide>
+      <RequestPanel request={request} mode="staff" notice={notice} />
     </BayShell>
   );
 }

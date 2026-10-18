@@ -24,6 +24,18 @@ type UserDoc = {
   createdAt: Date;
 };
 
+type BrandKitDoc = {
+  fonts: string;
+  colors: string;
+  captionStyle: string;
+  hook: string;
+  cta: string;
+  logo: string;
+  music: string;
+  references: string[];
+  completedAt: Date;
+};
+
 type BayDoc = {
   _id: ObjectId;
   userId: ObjectId;
@@ -35,6 +47,7 @@ type BayDoc = {
   transactionId: string;
   createdAt: Date;
   notifiedAt?: Date;
+  brandKit?: BrandKitDoc;
 };
 
 type RequestDoc = {
@@ -43,6 +56,7 @@ type RequestDoc = {
   title: string;
   brief: string;
   links: string[];
+  deliveryLink?: string;
   status: RequestStatus;
   position: number;
   createdAt: Date;
@@ -64,10 +78,24 @@ export type RequestSummary = {
   position: number;
 };
 
+export type BrandKitView = {
+  fonts: string;
+  colors: string;
+  captionStyle: string;
+  hook: string;
+  cta: string;
+  logo: string;
+  music: string;
+  references: string;
+  complete: boolean;
+};
+
 export type BayView = {
   id: string;
+  clientName: string;
   planName: string;
   price: string;
+  brandKit: BrandKitView;
   requests: RequestSummary[];
 };
 
@@ -84,8 +112,31 @@ export type RequestDetail = {
   title: string;
   brief: string;
   links: string[];
+  deliveryLink: string | null;
   status: RequestStatus;
+  canStart: boolean;
+  brandKit: BrandKitView;
   notes: NoteView[];
+};
+
+export type DeskLane = "bench" | "start" | "client";
+
+export type DeskItem = {
+  bayId: string;
+  requestId: string;
+  clientName: string;
+  planName: string;
+  title: string;
+  age: string;
+  lane: DeskLane;
+};
+
+export type ProjectItem = {
+  id: string;
+  clientName: string;
+  planName: string;
+  price: string;
+  inMotion: boolean;
 };
 
 function users() {
@@ -119,6 +170,68 @@ function priceOf(bay: BayDoc) {
 
 function summary(request: RequestDoc): RequestSummary {
   return { id: request._id.toString(), title: request.title, status: request.status, position: request.position };
+}
+
+const emptyKit: BrandKitView = {
+  fonts: "",
+  colors: "",
+  captionStyle: "",
+  hook: "",
+  cta: "",
+  logo: "",
+  music: "",
+  references: "",
+  complete: false,
+};
+
+function kitView(kit?: BrandKitDoc): BrandKitView {
+  if (!kit?.completedAt || !kit.fonts || !kit.colors || !kit.captionStyle || !kit.hook || !kit.cta || !kit.logo || !kit.music || kit.references.length === 0) {
+    return kit
+      ? {
+          fonts: kit.fonts,
+          colors: kit.colors,
+          captionStyle: kit.captionStyle,
+          hook: kit.hook,
+          cta: kit.cta,
+          logo: kit.logo,
+          music: kit.music,
+          references: kit.references.join("\n"),
+          complete: false,
+        }
+      : emptyKit;
+  }
+  return {
+    fonts: kit.fonts,
+    colors: kit.colors,
+    captionStyle: kit.captionStyle,
+    hook: kit.hook,
+    cta: kit.cta,
+    logo: kit.logo,
+    music: kit.music,
+    references: kit.references.join("\n"),
+    complete: true,
+  };
+}
+
+function bayView(bay: BayDoc, jobs: RequestDoc[], clientName: string): BayView {
+  return {
+    id: bay._id.toString(),
+    clientName,
+    planName: planById(bay.plan).name,
+    price: priceOf(bay),
+    brandKit: kitView(bay.brandKit),
+    requests: jobs.map(summary),
+  };
+}
+
+function waited(from: Date) {
+  const minutes = Math.max(0, Math.floor((Date.now() - from.getTime()) / 60000));
+  if (minutes < 1) return "Just now";
+  if (minutes < 60) return `${minutes} min`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 48) return hours === 1 ? "1 hour" : `${hours} hours`;
+  const days = Math.floor(hours / 24);
+  return days === 1 ? "1 day" : `${days} days`;
 }
 
 export function parseLinks(raw: string): { ok: true; links: string[] } | { ok: false } {
@@ -238,35 +351,63 @@ export async function baysFor(user: SessionUser): Promise<BayView[]> {
   const views: BayView[] = [];
   for (const bay of rows) {
     const jobs = await requestCollection.find({ bayId: bay._id }).sort({ position: 1 }).toArray();
-    views.push({
-      id: bay._id.toString(),
-      planName: planById(bay.plan).name,
-      price: priceOf(bay),
-      requests: jobs.map(summary),
-    });
+    views.push(bayView(bay, jobs, user.name));
   }
   return views;
 }
 
-export async function staffBayList() {
-  const bayCollection = await bays();
-  const rows = await bayCollection.find().sort({ createdAt: -1 }).toArray();
+export async function staffDesk(): Promise<{ queue: DeskItem[]; projects: ProjectItem[] }> {
+  const bayRows = await (await bays()).find().sort({ createdAt: -1 }).toArray();
   const userCollection = await users();
-  const requestCollection = await requests();
-  const list = [];
-  for (const bay of rows) {
-    const owner = await userCollection.findOne({ _id: bay.userId });
-    const active = await requestCollection.findOne({ bayId: bay._id, status: "active" });
-    list.push({
+  const owners = bayRows.length === 0 ? [] : await userCollection.find({ _id: { $in: bayRows.map((bay) => bay.userId) } }).toArray();
+  const ownerById = new Map(owners.map((owner) => [owner._id.toString(), owner]));
+  const open = await (await requests()).find({ status: { $in: ["queued", "active", "delivered"] } }).toArray();
+  const queue: Array<DeskItem & { at: number }> = [];
+  const projects: ProjectItem[] = [];
+
+  for (const bay of bayRows) {
+    const owner = ownerById.get(bay.userId.toString());
+    const clientName = owner?.name || "Client";
+    const mine = open.filter((job) => job.bayId.equals(bay._id));
+    const active = mine.filter((job) => job.status === "active");
+    const queued = mine.filter((job) => job.status === "queued").sort((a, b) => a.position - b.position);
+    const delivered = mine.filter((job) => job.status === "delivered");
+    const row = (job: RequestDoc, lane: DeskLane) => ({
+      bayId: bay._id.toString(),
+      requestId: job._id.toString(),
+      clientName,
+      planName: planById(bay.plan).name,
+      title: job.title,
+      age: waited(job.updatedAt),
+      lane,
+      at: job.updatedAt.getTime(),
+    });
+    for (const job of active) queue.push(row(job, "bench"));
+    if (active.length === 0 && queued[0]) queue.push(row(queued[0], "start"));
+    for (const job of delivered) queue.push(row(job, "client"));
+    projects.push({
       id: bay._id.toString(),
-      clientName: owner?.name || "Client",
-      email: owner?.email || "",
+      clientName,
       planName: planById(bay.plan).name,
       price: priceOf(bay),
-      activeTitle: active?.title ?? null,
+      inMotion: active.length + queued.length + delivered.length > 0,
     });
   }
-  return list;
+
+  const order: DeskLane[] = ["bench", "start", "client"];
+  queue.sort((a, b) => order.indexOf(a.lane) - order.indexOf(b.lane) || a.at - b.at);
+  return {
+    queue: queue.map((item) => ({
+      bayId: item.bayId,
+      requestId: item.requestId,
+      clientName: item.clientName,
+      planName: item.planName,
+      title: item.title,
+      age: item.age,
+      lane: item.lane,
+    })),
+    projects,
+  };
 }
 
 async function ownsBay(user: SessionUser, bayId: ObjectId) {
@@ -282,7 +423,8 @@ export async function bayFor(user: SessionUser, bayId: string): Promise<BayView 
   const bay = await ownsBay(user, objectId);
   if (!bay) return null;
   const jobs = await (await requests()).find({ bayId: bay._id }).sort({ position: 1 }).toArray();
-  return { id: bay._id.toString(), planName: planById(bay.plan).name, price: priceOf(bay), requests: jobs.map(summary) };
+  const owner = await (await users()).findOne({ _id: bay.userId });
+  return bayView(bay, jobs, owner?.name || "Client");
 }
 
 export async function requestFor(user: SessionUser, requestId: string): Promise<RequestDetail | null> {
@@ -304,23 +446,72 @@ export async function requestFor(user: SessionUser, requestId: string): Promise<
       at: note.createdAt.toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" }),
     });
   }
+  const requestCollection = await requests();
+  const active = await requestCollection.findOne({ bayId: request.bayId, status: "active" });
+  const next = await requestCollection.find({ bayId: request.bayId, status: "queued" }).sort({ position: 1 }).limit(1).next();
   return {
     id: request._id.toString(),
     bayId: request.bayId.toString(),
     title: request.title,
     brief: request.brief,
     links: request.links,
+    deliveryLink: request.deliveryLink ?? null,
     status: request.status,
+    canStart: !active && next?._id.equals(request._id) === true,
+    brandKit: kitView(bay.brandKit),
     notes: noteViews,
   };
 }
 
-export async function createQueuedRequest(user: SessionUser, bayId: string, title: string, brief: string, links: string[]) {
+export async function saveBrandKit(
+  user: SessionUser,
+  bayId: string,
+  input: { fonts: string; colors: string; captionStyle: string; hook: string; cta: string; logo: string; music: string; references: string },
+) {
   if (user.role !== "client") return false;
   const objectId = idOf(bayId);
   if (!objectId) return false;
   const bay = await ownsBay(user, objectId);
   if (!bay) return false;
+  const text = (value: string, max: number) => value.trim().replace(/\s+/g, " ").slice(0, max);
+  const fonts = text(input.fonts, 400);
+  const colors = text(input.colors, 400);
+  const captionStyle = text(input.captionStyle, 400);
+  const hook = input.hook.trim().slice(0, 800);
+  const cta = input.cta.trim().slice(0, 800);
+  const logo = parseLinks(input.logo);
+  const music = parseLinks(input.music);
+  const references = parseLinks(input.references);
+  if (!fonts || !colors || !captionStyle || !hook || !cta) return false;
+  if (!logo.ok || logo.links.length !== 1 || !music.ok || music.links.length !== 1 || !references.ok || references.links.length < 1) return false;
+  await (await bays()).updateOne(
+    { _id: bay._id },
+    {
+      $set: {
+        brandKit: {
+          fonts,
+          colors,
+          captionStyle,
+          hook,
+          cta,
+          logo: logo.links[0],
+          music: music.links[0],
+          references: references.links,
+          completedAt: new Date(),
+        },
+      },
+    },
+  );
+  return true;
+}
+
+export async function createQueuedRequest(user: SessionUser, bayId: string, title: string, brief: string, links: string[]) {
+  if (user.role !== "client") return "bay" as const;
+  const objectId = idOf(bayId);
+  if (!objectId) return "bay" as const;
+  const bay = await ownsBay(user, objectId);
+  if (!bay) return "bay" as const;
+  if (!kitView(bay.brandKit).complete) return "kit" as const;
   const collection = await requests();
   const last = await collection.find({ bayId: bay._id }).sort({ position: -1 }).limit(1).next();
   const now = new Date();
@@ -335,7 +526,7 @@ export async function createQueuedRequest(user: SessionUser, bayId: string, titl
     createdAt: now,
     updatedAt: now,
   });
-  return true;
+  return "ok" as const;
 }
 
 export async function moveQueuedRequest(user: SessionUser, requestId: string, direction: "up" | "down") {
@@ -369,11 +560,16 @@ export async function startNextRequest(user: SessionUser, bayId: string) {
   return true;
 }
 
-export async function deliverActiveRequest(user: SessionUser, bayId: string) {
+export async function deliverActiveRequest(user: SessionUser, bayId: string, deliveryLink: string) {
   if (user.role !== "staff") return false;
   const objectId = idOf(bayId);
   if (!objectId || !(await ownsBay(user, objectId))) return false;
-  const result = await (await requests()).updateOne({ bayId: objectId, status: "active" }, { $set: { status: "delivered", updatedAt: new Date() } });
+  const parsed = parseLinks(deliveryLink);
+  if (!parsed.ok || parsed.links.length !== 1) return false;
+  const result = await (await requests()).updateOne(
+    { bayId: objectId, status: "active" },
+    { $set: { status: "delivered", deliveryLink: parsed.links[0], updatedAt: new Date() } },
+  );
   return result.modifiedCount === 1;
 }
 

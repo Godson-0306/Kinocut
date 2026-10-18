@@ -12,17 +12,24 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default async function StaffBayPage({ params }: { params: Promise<{ bayId: string }> }) {
+export default async function StaffBayPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ bayId: string }>;
+  searchParams: Promise<{ error?: string }>;
+}) {
   const user = await currentUser();
   if (!user) redirect("/login");
   if (user.role !== "staff") redirect("/bay");
   const { bayId } = await params;
+  const query = await searchParams;
   const bay = await bayFor(user, bayId).catch(() => null);
   if (!bay) redirect("/bays");
 
   return (
-    <BayShell kicker="Client bay" title={bay.planName}>
-      <BayBoard bay={bay} mode="staff" />
+    <BayShell kicker="Client bay" title={bay.clientName}>
+      <BayBoard bay={bay} mode="staff" notice={query.error === "delivery" ? "Delivery needs one finished-video link." : undefined} />
     </BayShell>
   );
 }

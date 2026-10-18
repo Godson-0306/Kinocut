@@ -9,6 +9,7 @@ import {
   deliverActiveRequest,
   moveQueuedRequest,
   parseLinks,
+  saveBrandKit,
   startNextRequest,
 } from "@/lib/accounts";
 import { currentUser } from "@/lib/session";
@@ -36,9 +37,29 @@ export async function createRequest(formData: FormData) {
   if (!title) redirect("/bay?error=title");
   if (!parsed.ok) redirect("/bay?error=links");
   const saved = await createQueuedRequest(user, bayId, title, brief, parsed.links);
-  if (!saved) redirect("/bay?error=bay");
+  if (saved === "kit") redirect("/bay?error=kit");
+  if (saved !== "ok") redirect("/bay?error=bay");
   revalidatePath("/bay");
   revalidatePath("/bays");
+  redirect("/bay");
+}
+
+export async function saveKit(formData: FormData) {
+  const user = await clientUser();
+  const bayId = String(formData.get("bayId") ?? "");
+  const saved = await saveBrandKit(user, bayId, {
+    fonts: String(formData.get("fonts") ?? ""),
+    colors: String(formData.get("colors") ?? ""),
+    captionStyle: String(formData.get("captionStyle") ?? ""),
+    hook: String(formData.get("hook") ?? ""),
+    cta: String(formData.get("cta") ?? ""),
+    logo: String(formData.get("logo") ?? ""),
+    music: String(formData.get("music") ?? ""),
+    references: String(formData.get("references") ?? ""),
+  });
+  if (!saved) redirect(`/bay?kit=${encodeURIComponent(bayId)}&error=kit`);
+  revalidatePath("/bay");
+  revalidatePath(`/bay`);
   redirect("/bay");
 }
 
@@ -54,19 +75,26 @@ export async function moveRequest(formData: FormData) {
 export async function startNext(formData: FormData) {
   const user = await staffUser();
   const bayId = String(formData.get("bayId") ?? "");
+  const requestId = String(formData.get("requestId") ?? "");
   await startNextRequest(user, bayId);
   revalidatePath("/bays");
   revalidatePath(`/bays/${bayId}`);
-  redirect(`/bays/${bayId}`);
+  if (requestId) revalidatePath(`/bays/${bayId}/${requestId}`);
+  redirect(requestId ? `/bays/${bayId}/${requestId}` : `/bays/${bayId}`);
 }
 
 export async function markDelivered(formData: FormData) {
   const user = await staffUser();
   const bayId = String(formData.get("bayId") ?? "");
-  await deliverActiveRequest(user, bayId);
+  const requestId = String(formData.get("requestId") ?? "");
+  const back = requestId ? `/bays/${bayId}/${requestId}` : `/bays/${bayId}`;
+  const saved = await deliverActiveRequest(user, bayId, String(formData.get("delivery") ?? ""));
+  if (!saved) redirect(`${back}?error=delivery`);
   revalidatePath("/bays");
   revalidatePath(`/bays/${bayId}`);
-  redirect(`/bays/${bayId}`);
+  revalidatePath(back);
+  revalidatePath("/bay");
+  redirect(back);
 }
 
 export async function approveRequest(formData: FormData) {

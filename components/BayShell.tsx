@@ -1,20 +1,23 @@
+import { cn } from "@/lib/utils";
 import { logout } from "@/lib/auth-actions";
 
 export function BayShell({
   kicker,
   title,
   lede,
+  wide,
   children,
 }: {
   kicker: string;
   title: string;
   lede?: string;
+  wide?: boolean;
   children: React.ReactNode;
 }) {
   return (
     <main id="main" className="relative min-h-[100svh] overflow-hidden bg-ink px-5 py-32 text-white">
       <div className="bg-aurora pointer-events-none absolute left-1/2 top-24 h-72 w-72 -translate-x-1/2 rounded-full opacity-40 blur-3xl" />
-      <div className="relative mx-auto w-full max-w-3xl">
+      <div className={cn("relative mx-auto w-full", wide ? "max-w-5xl" : "max-w-3xl")}>
         <div className="flex items-start justify-between gap-4">
           <p className="type-micro text-blue-300">{kicker}</p>
           <form action={logout}>
