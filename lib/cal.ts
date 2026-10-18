@@ -44,7 +44,7 @@ export async function introCalendar(): Promise<BookingDay[]> {
   end.setUTCMonth(end.getUTCMonth() + 2);
   end.setUTCDate(1);
   const url = new URL("https://api.cal.com/v2/slots");
-  url.searchParams.set("eventTypeId", EVENT_TYPE_ID);
+  url.searchParams.set("eventTypeId", String(EVENT_TYPE_ID));
   url.searchParams.set("start", start.toISOString());
   url.searchParams.set("end", end.toISOString());
   url.searchParams.set("timeZone", ZONE);
