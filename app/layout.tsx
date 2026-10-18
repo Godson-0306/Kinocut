@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Inter } from "next/font/google";
 import { palette } from "@/content/tokens";
 import { serviceJsonLd, site } from "@/content/site";
+import { CookieConsent } from "@/components/CookieConsent";
 import { Cursor } from "@/components/Cursor";
 import { FilmGrain } from "@/components/FilmGrain";
 import { Footer } from "@/components/Footer";
@@ -62,18 +63,17 @@ export const viewport: Viewport = {
 
 const GA_ID = "G-1SB1EJ5DXP";
 
+const consentScript = `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}var analytics='denied';try{if(localStorage.getItem('kinocut-consent')==='granted')analytics='granted';}catch(e){}gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:analytics,wait_for_update:500});`;
+
 const bootScript = `try{var reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;var seen=sessionStorage.getItem("kinocut-intro-seen");document.documentElement.classList.add("js");document.documentElement.classList.remove("no-js");if(reduce||seen){document.documentElement.dataset.intro="done";document.documentElement.dataset.skipIntro="1";}else{document.documentElement.dataset.intro="play";}}catch(e){document.documentElement.dataset.intro="done";document.documentElement.dataset.skipIntro="1";}`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${bricolage.variable} ${inter.variable} no-js`} suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: consentScript }} />
         <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA_ID}');`,
-          }}
-        />
+        <script dangerouslySetInnerHTML={{ __html: `gtag('js',new Date());gtag('config','${GA_ID}');` }} />
         <link rel="preload" as="image" href="/videos/hero-poster.jpg" fetchPriority="high" />
         <script dangerouslySetInnerHTML={{ __html: bootScript }} />
       </head>
@@ -87,6 +87,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Navbar />
         {children}
         <Footer />
+        <CookieConsent />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceJsonLd()) }} />
       </body>
     </html>

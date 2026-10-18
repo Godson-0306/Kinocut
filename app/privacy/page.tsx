@@ -17,7 +17,7 @@ export default function PrivacyPage() {
       <section>
         <h2 className="type-sub text-ink">What this site stores</h2>
         <p className="type-body mt-3">
-          The intro slate is remembered for the session in sessionStorage so it does not replay on every click. The site does not set advertising cookies and does not run a tracker in this build.
+          The intro slate is remembered for the session in sessionStorage so it does not replay on every click. A cookie notice asks before Google Analytics stores cookies to measure visits. Rejecting it leaves those cookies off. Signing in sets a separate login cookie. The site does not set advertising cookies.
         </p>
       </section>
       <section>
