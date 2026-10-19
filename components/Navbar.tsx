@@ -8,6 +8,7 @@ import { site } from "@/content/site";
 import { ease } from "@/lib/motion";
 import { onIntroDone } from "@/lib/intro";
 import { startScroll, stopScroll, subscribeScroll } from "@/lib/scroll";
+import { isDeskPath } from "@/lib/desk-frame";
 import { cn } from "@/lib/utils";
 import { Logo } from "./Logo";
 import { MagneticButton } from "./MagneticButton";
@@ -72,6 +73,8 @@ export function Navbar() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
+
+  if (isDeskPath(pathname)) return null;
 
   return (
     <>

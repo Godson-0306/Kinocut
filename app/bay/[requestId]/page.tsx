@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { BayShell } from "@/components/BayShell";
 import { RequestPanel } from "@/components/RequestPanel";
-import { requestFor } from "@/lib/accounts";
+import { baysFor, requestFor } from "@/lib/accounts";
+import { clientFrame } from "@/lib/desk-frame";
 import { currentUser } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
@@ -24,11 +25,12 @@ export default async function RequestPage({
   if (user.role === "staff") redirect("/bays");
   const { requestId } = await params;
   const query = await searchParams;
-  const request = await requestFor(user, requestId).catch(() => null);
+  const [request, bays] = await Promise.all([requestFor(user, requestId).catch(() => null), baysFor(user).catch(() => [])]);
   if (!request) redirect("/bay");
+  const frame = clientFrame(bays);
 
   return (
-    <BayShell kicker="Request" title={request.title}>
+    <BayShell title={request.title} counts={frame.counts} nav={frame.nav}>
       <RequestPanel request={request} mode="client" notice={query.error === "note" ? "A note needs a few words." : undefined} />
     </BayShell>
   );

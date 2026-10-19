@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { BayBoard } from "@/components/BayBoard";
 import { BayShell } from "@/components/BayShell";
 import { baysFor } from "@/lib/accounts";
+import { clientFrame, emptyClientFrame } from "@/lib/desk-frame";
 import { currentUser } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
@@ -30,8 +31,8 @@ export default async function BayPage({ searchParams }: { searchParams: Promise<
     bays = await baysFor(user);
   } catch {
     return (
-      <BayShell kicker="Your bay" title={user.name} lede="The bay could not be reached.">
-        <article className="rounded-panel bg-white p-8 text-ink shadow-card">
+      <BayShell title={user.name} lede="The bay could not be reached." counts={emptyClientFrame.counts} nav={emptyClientFrame.nav}>
+        <article className="rounded-panel border border-ink/10 bg-white p-8 text-ink shadow-card">
           <p className="type-body text-ink-600">Check the database connection, then open this page again.</p>
         </article>
       </BayShell>
@@ -39,16 +40,18 @@ export default async function BayPage({ searchParams }: { searchParams: Promise<
   }
 
   const needsKit = bays.some((bay) => !bay.brandKit.complete);
+  const frame = clientFrame(bays);
 
   return (
     <BayShell
-      kicker="Your bay"
       title={user.name}
       lede={
         needsKit
           ? "Save the brand kit before the first request. Fonts, colors, logo, captions, music, references, hook, and the CTA."
           : "One request is on the bench at a time. The rest wait in the queue until you approve."
       }
+      counts={frame.counts}
+      nav={frame.nav}
     >
       {bays.length === 0 ? (
         <article className="rounded-panel bg-white p-8 text-ink shadow-card">

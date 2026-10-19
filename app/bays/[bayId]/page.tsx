@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { BayBoard } from "@/components/BayBoard";
 import { BayShell } from "@/components/BayShell";
-import { bayFor } from "@/lib/accounts";
+import { bayFor, staffDesk } from "@/lib/accounts";
+import { emptyStaffFrame, staffFrame } from "@/lib/desk-frame";
 import { currentUser } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
@@ -24,11 +25,12 @@ export default async function StaffBayPage({
   if (user.role !== "staff") redirect("/bay");
   const { bayId } = await params;
   const query = await searchParams;
-  const bay = await bayFor(user, bayId).catch(() => null);
+  const [bay, desk] = await Promise.all([bayFor(user, bayId).catch(() => null), staffDesk().catch(() => null)]);
   if (!bay) redirect("/bays");
+  const frame = desk ? staffFrame(desk) : emptyStaffFrame;
 
   return (
-    <BayShell kicker="Client bay" title={bay.clientName}>
+    <BayShell title={bay.clientName} counts={frame.counts} nav={frame.nav}>
       <BayBoard bay={bay} mode="staff" notice={query.error === "delivery" ? "Delivery needs one finished-video link." : undefined} />
     </BayShell>
   );

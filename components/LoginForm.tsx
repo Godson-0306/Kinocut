@@ -28,7 +28,7 @@ export function LoginForm() {
               <span className="type-micro text-blue-700">Password</span>
               <input className="field mt-2" type="password" name="password" autoComplete="current-password" required />
             </label>
-            {signIn.error ? <p className="text-sm text-ink-600">{signIn.error}</p> : null}
+            {signIn.error ? <p className="text-sm text-red-600">{signIn.error}</p> : null}
             <MagneticButton type="submit" className={`w-full ${signingIn ? "pointer-events-none opacity-70" : ""}`}>
               {signingIn ? "Opening the door" : "Sign in"}
             </MagneticButton>

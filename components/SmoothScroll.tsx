@@ -1,12 +1,17 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { registerGsap } from "@/lib/gsap";
+import { isDeskPath } from "@/lib/desk-frame";
 import { INTRO_EVENT } from "@/lib/intro";
 import { emitScroll, setScrollController } from "@/lib/scroll";
 
 export function SmoothScroll() {
+  const pathname = usePathname();
+
   useEffect(() => {
+    if (isDeskPath(pathname)) return;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let destroyed = false;
     let cleanup = () => {};
@@ -65,7 +70,7 @@ export function SmoothScroll() {
       destroyed = true;
       cleanup();
     };
-  }, []);
+  }, [pathname]);
 
   return null;
 }

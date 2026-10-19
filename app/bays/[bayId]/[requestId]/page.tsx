@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { BayShell } from "@/components/BayShell";
 import { RequestPanel } from "@/components/RequestPanel";
-import { requestFor } from "@/lib/accounts";
+import { requestFor, staffDesk } from "@/lib/accounts";
+import { emptyStaffFrame, staffFrame } from "@/lib/desk-frame";
 import { currentUser } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
@@ -24,13 +25,14 @@ export default async function StaffRequestPage({
   if (user.role !== "staff") redirect("/bay");
   const { bayId, requestId } = await params;
   const query = await searchParams;
-  const request = await requestFor(user, requestId).catch(() => null);
+  const [request, desk] = await Promise.all([requestFor(user, requestId).catch(() => null), staffDesk().catch(() => null)]);
   if (!request || request.bayId !== bayId) redirect(`/bays/${bayId}`);
+  const frame = desk ? staffFrame(desk) : emptyStaffFrame;
 
   const notice = query.error === "note" ? "A note needs a few words." : query.error === "delivery" ? "Delivery needs one finished-video link." : undefined;
 
   return (
-    <BayShell kicker="Request" title={request.title} wide>
+    <BayShell title={request.title} counts={frame.counts} nav={frame.nav}>
       <RequestPanel request={request} mode="staff" notice={notice} />
     </BayShell>
   );

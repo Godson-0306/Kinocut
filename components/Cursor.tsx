@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { isDeskPath } from "@/lib/desk-frame";
 
 type Mode = "default" | "hover" | "play" | "drag";
 
@@ -10,7 +11,7 @@ type Mode = "default" | "hover" | "play" | "drag";
  * frame loop, so the cursor stays locked to the pointer.
  */
 function nativeCursorPage(pathname: string) {
-  return pathname === "/login" || pathname.startsWith("/checkout/return");
+  return pathname === "/login" || pathname.startsWith("/checkout/return") || isDeskPath(pathname);
 }
 
 export function Cursor() {

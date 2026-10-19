@@ -1,13 +1,18 @@
 "use client";
 
 import { Rewind } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { site } from "@/content/site";
+import { isDeskPath } from "@/lib/desk-frame";
 import { scrollTo } from "@/lib/scroll";
 import { cn } from "@/lib/utils";
 import { OPEN_PREFERENCES_EVENT } from "./CookieConsent";
 import { Marquee } from "./Marquee";
 
 export function Footer() {
+  const pathname = usePathname();
+  if (isDeskPath(pathname)) return null;
+
   return (
     <footer className="overflow-hidden bg-ink-950 text-white">
       <div className="mx-auto flex max-w-[1200px] flex-col gap-8 px-5 py-12 md:flex-row md:items-end md:justify-between md:px-8">
