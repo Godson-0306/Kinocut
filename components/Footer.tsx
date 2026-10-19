@@ -4,6 +4,7 @@ import { Rewind } from "lucide-react";
 import { site } from "@/content/site";
 import { scrollTo } from "@/lib/scroll";
 import { cn } from "@/lib/utils";
+import { OPEN_PREFERENCES_EVENT } from "./CookieConsent";
 import { Marquee } from "./Marquee";
 
 export function Footer() {
@@ -20,6 +21,13 @@ export function Footer() {
             <a href={site.links.privacy} className="text-blue-300">
               Privacy
             </a>
+            <button
+              type="button"
+              className="text-blue-300"
+              onClick={() => window.dispatchEvent(new Event(OPEN_PREFERENCES_EVENT))}
+            >
+              Cookies
+            </button>
             <a href={site.links.email} className="text-blue-300">
               {site.email}
             </a>
