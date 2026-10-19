@@ -8,6 +8,7 @@ import {
   createQueuedRequest,
   deliverActiveRequest,
   moveQueuedRequest,
+  removeClientBay,
   parseLinks,
   saveBrandKit,
   startNextRequest,
@@ -81,6 +82,17 @@ export async function startNext(formData: FormData) {
   revalidatePath(`/bays/${bayId}`);
   if (requestId) revalidatePath(`/bays/${bayId}/${requestId}`);
   redirect(requestId ? `/bays/${bayId}/${requestId}` : `/bays/${bayId}`);
+}
+
+export async function removeBay(formData: FormData) {
+  const user = await staffUser();
+  const bayId = String(formData.get("bayId") ?? "");
+  if (formData.get("confirm") !== "yes") redirect(`/bays/${bayId}`);
+  const removed = await removeClientBay(user, bayId);
+  if (!removed) redirect(`/bays/${bayId}`);
+  revalidatePath("/bays");
+  revalidatePath("/bay");
+  redirect("/bays");
 }
 
 export async function markDelivered(formData: FormData) {

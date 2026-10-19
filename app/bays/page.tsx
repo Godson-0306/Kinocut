@@ -35,7 +35,7 @@ export default async function StaffBaysPage() {
 
   return (
     <BayShell title="The desk" lede="Start what is waiting, finish what is on the bench, and send the cut back as a link." counts={frame.counts} nav={frame.nav}>
-      <WorkQueue queue={desk.queue} />
+      <WorkQueue queue={desk.queue} projects={desk.projects} />
     </BayShell>
   );
 }

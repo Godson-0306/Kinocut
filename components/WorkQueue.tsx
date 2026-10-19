@@ -1,4 +1,4 @@
-import type { DeskItem, DeskLane } from "@/lib/accounts";
+import type { DeskItem, DeskLane, ProjectItem } from "@/lib/accounts";
 
 const laneCopy: Record<DeskLane, { title: string; empty: string }> = {
   bench: { title: "On the bench", empty: "Nothing is on the bench." },
@@ -6,7 +6,7 @@ const laneCopy: Record<DeskLane, { title: string; empty: string }> = {
   client: { title: "Waiting on the client", empty: "Nothing is waiting on a client." },
 };
 
-export function WorkQueue({ queue }: { queue: DeskItem[] }) {
+export function WorkQueue({ queue, projects }: { queue: DeskItem[]; projects: ProjectItem[] }) {
   const lanes: DeskLane[] = ["bench", "start", "client"];
 
   return (
@@ -33,6 +33,26 @@ export function WorkQueue({ queue }: { queue: DeskItem[] }) {
           </section>
         );
       })}
+      <section className="rounded-panel border border-ink/10 bg-white p-6 text-ink shadow-card md:p-8">
+        <h2 className="type-sub">Bays</h2>
+        {projects.length === 0 ? <p className="type-body mt-4 text-ink-600">No client bays yet.</p> : null}
+        <ul className="mt-4 grid gap-3">
+          {projects.map((project) => (
+            <li key={project.id}>
+              <a className="block rounded-card border border-ink/10 px-4 py-3" href={`/bays/${project.id}`}>
+                <p className="type-micro text-blue-700">
+                  {project.planName} · {project.price}
+                </p>
+                <p className="mt-1 font-medium">{project.clientName}</p>
+                <p className="type-body mt-1 text-ink-600">
+                  Queued {project.queued} · On the bench {project.bench} · Waiting on the client {project.waiting}
+                </p>
+                <p className="type-micro mt-2 text-blue-700">{project.kitReady ? "Brand kit ready" : "Brand kit needed"}</p>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
     </div>
   );
 }

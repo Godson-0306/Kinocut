@@ -1,5 +1,5 @@
 import { site } from "@/content/site";
-import { createRequest, markDelivered, moveRequest, startNext } from "@/lib/bay-actions";
+import { createRequest, markDelivered, moveRequest, removeBay, startNext } from "@/lib/bay-actions";
 import type { BayView, RequestStatus } from "@/lib/accounts";
 import { BrandKitForm } from "./BrandKitForm";
 import { MagneticButton } from "./MagneticButton";
@@ -116,6 +116,16 @@ export function BayBoard({
               <MagneticButton type="submit">Mark delivered</MagneticButton>
             </form>
           ) : null}
+          <form action={removeBay} className="mt-2 grid gap-3 border-t border-ink/10 pt-6">
+            <input type="hidden" name="bayId" value={bay.id} />
+            <label className="flex items-start gap-3 text-sm text-ink-600">
+              <input className="mt-1" type="checkbox" name="confirm" value="yes" required />
+              <span>Remove this bay and its queue. A client with no other bay loses sign-in.</span>
+            </label>
+            <button type="submit" className="w-fit text-sm font-medium text-red-600">
+              Remove bay
+            </button>
+          </form>
         </div>
       ) : null}
       {mode === "client" && kit.complete ? (

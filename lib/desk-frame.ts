@@ -1,4 +1,4 @@
-import type { BayView, DeskItem, ProjectItem } from "@/lib/accounts";
+import type { BayView, DeskItem, ProjectItem, RequestStatus } from "@/lib/accounts";
 
 export function isDeskPath(pathname: string) {
   return pathname === "/bay" || pathname.startsWith("/bay/") || pathname === "/bays" || pathname.startsWith("/bays/");
@@ -18,8 +18,21 @@ export function staffFrame(desk: { queue: DeskItem[]; projects: ProjectItem[] })
     ] satisfies DeskCount[],
     nav: [
       { href: "/bays", label: "The desk" },
-      ...desk.projects.map((project) => ({ href: `/bays/${project.id}`, label: project.clientName })),
+      ...desk.projects.map((project) => ({ href: `/bays/${project.id}`, label: `${project.clientName} · ${project.planName}` })),
     ] satisfies DeskLink[],
+  };
+}
+
+export function bayFrame(bay: BayView, nav: DeskLink[]) {
+  const count = (status: RequestStatus) => String(bay.requests.filter((request) => request.status === status).length);
+  return {
+    counts: [
+      { label: "On the bench", value: count("active") },
+      { label: "Waiting to start", value: count("queued") },
+      { label: "Waiting on the client", value: count("delivered") },
+      { label: "Approved", value: count("approved") },
+    ] satisfies DeskCount[],
+    nav,
   };
 }
 

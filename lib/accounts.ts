@@ -76,6 +76,10 @@ export type RequestSummary = {
   title: string;
   status: RequestStatus;
   position: number;
+  age: string;
+  brief: string;
+  linkCount: number;
+  deliveryLink: string | null;
 };
 
 export type BrandKitView = {
@@ -137,6 +141,10 @@ export type ProjectItem = {
   planName: string;
   price: string;
   inMotion: boolean;
+  queued: number;
+  bench: number;
+  waiting: number;
+  kitReady: boolean;
 };
 
 function users() {
@@ -214,7 +222,16 @@ function priceOf(bay: BayDoc) {
 }
 
 function summary(request: RequestDoc): RequestSummary {
-  return { id: request._id.toString(), title: request.title, status: request.status, position: request.position };
+  return {
+    id: request._id.toString(),
+    title: request.title,
+    status: request.status,
+    position: request.position,
+    age: waited(request.updatedAt),
+    brief: request.brief,
+    linkCount: request.links.length,
+    deliveryLink: request.deliveryLink ?? null,
+  };
 }
 
 const emptyKit: BrandKitView = {
@@ -437,6 +454,10 @@ export async function staffDesk(): Promise<{ queue: DeskItem[]; projects: Projec
       planName: planName(bay.plan),
       price: priceOf(bay),
       inMotion: active.length + queued.length + delivered.length > 0,
+      queued: queued.length,
+      bench: active.length,
+      waiting: delivered.length,
+      kitReady: kitView(bay.brandKit).complete,
     });
   }
 
@@ -591,6 +612,23 @@ export async function moveQueuedRequest(user: SessionUser, requestId: string, di
   const now = new Date();
   await collection.updateOne({ _id: request._id }, { $set: { position: neighbor.position, updatedAt: now } });
   await collection.updateOne({ _id: neighbor._id }, { $set: { position: request.position, updatedAt: now } });
+}
+
+export async function removeClientBay(user: SessionUser, bayId: string) {
+  if (user.role !== "staff") return false;
+  const objectId = idOf(bayId);
+  if (!objectId) return false;
+  const bayCollection = await bays();
+  const bay = await bayCollection.findOne({ _id: objectId });
+  if (!bay) return false;
+  const requestCollection = await requests();
+  const jobs = await requestCollection.find({ bayId: objectId }).project({ _id: 1 }).toArray();
+  if (jobs.length) await (await notes()).deleteMany({ requestId: { $in: jobs.map((job) => job._id) } });
+  await requestCollection.deleteMany({ bayId: objectId });
+  await bayCollection.deleteOne({ _id: objectId });
+  const remaining = await bayCollection.countDocuments({ userId: bay.userId });
+  if (remaining === 0) await (await users()).deleteOne({ _id: bay.userId, role: "client" });
+  return true;
 }
 
 export async function startNextRequest(user: SessionUser, bayId: string) {
