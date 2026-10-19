@@ -27,4 +27,5 @@ async function ensureIndexes(database: Db) {
   await database.collection("bays").createIndex({ userId: 1 });
   await database.collection("requests").createIndex({ bayId: 1, position: 1 });
   await database.collection("notes").createIndex({ requestId: 1, createdAt: 1 });
+  await database.collection("checkoutAttempts").createIndex({ createdAt: 1 });
 }

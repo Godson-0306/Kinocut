@@ -1,4 +1,6 @@
+import { attachCheckoutTxRef, recordCheckoutAttempt } from "@/lib/accounts";
 import { chargeCurrency, isPlanId, nairaPerDollar, planById, startSubscription } from "@/lib/billing";
+import { sendCheckoutAttemptEmail } from "@/lib/mail";
 
 export const dynamic = "force-dynamic";
 
@@ -31,8 +33,18 @@ export async function POST(request: Request) {
   const proto = request.headers.get("x-forwarded-proto") ?? "http";
   const origin = host ? `${proto}://${host}` : "http://localhost:3000";
 
+  const attempt = { name, email, plan: plan.id, currency, amount };
+  let attemptId: Awaited<ReturnType<typeof recordCheckoutAttempt>> | null = null;
   try {
-    const url = await startSubscription({
+    attemptId = await recordCheckoutAttempt(attempt);
+  } catch (error) {
+    console.error("Checkout attempt was not saved", error instanceof Error ? error.message : "unknown");
+  }
+
+  const notify = () => sendCheckoutAttemptEmail(attempt).catch(() => false);
+
+  try {
+    const started = await startSubscription({
       plan: plan.id,
       name,
       email,
@@ -40,9 +52,16 @@ export async function POST(request: Request) {
       amount,
       redirectUrl: `${origin}/checkout/return`,
     });
-    return Response.json({ url }, { headers: { "Cache-Control": "private, no-store" } });
+    if (attemptId) {
+      await attachCheckoutTxRef(attemptId, started.txRef).catch((error: unknown) => {
+        console.error("Checkout reference was not saved", error instanceof Error ? error.message : "unknown");
+      });
+    }
+    await notify();
+    return Response.json({ url: started.link }, { headers: { "Cache-Control": "private, no-store" } });
   } catch (error) {
     console.error("Checkout failed", error instanceof Error ? error.message : "unknown");
+    await notify();
     return Response.json({ error: "checkout" }, { status: 502 });
   }
 }

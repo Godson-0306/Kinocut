@@ -20,7 +20,7 @@ export default function PrivacyPage() {
       <section>
         <h2 className="type-sub text-ink">Email and booking</h2>
         <p className="type-body mt-3">
-          If you email {site.email}, we receive whatever you send. Booking a time sends your name, email, and notes to Cal.com, which sends the confirmation. Cal.com has its own privacy policy.
+          If you email {site.email}, we receive whatever you send. Starting checkout stores your name and email and tells the bay, even when the payment is not finished. Booking a time sends your name, email, and notes to Cal.com, which sends the confirmation. Cal.com has its own privacy policy.
         </p>
       </section>
       <section>

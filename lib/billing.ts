@@ -19,6 +19,10 @@ export function planById(id: PlanId) {
   return plan;
 }
 
+export function planName(id: string) {
+  return site.pricing.plans.find((item) => item.id === id)?.name ?? "Retired plan";
+}
+
 export function chargeCurrency(country: string | null): ChargeCurrency {
   return country === "NG" ? "NGN" : "USD";
 }
@@ -119,7 +123,7 @@ export async function startSubscription(input: {
     }),
   });
   if (!payment.link) throw new Error("Flutterwave did not return a checkout link");
-  return payment.link;
+  return { link: payment.link, txRef };
 }
 
 export type VerifiedCharge = {

@@ -151,7 +151,7 @@ export function CookieConsent() {
       )}
 
       {managing && (
-        <div className="fixed inset-0 z-[80] flex items-end justify-center bg-ink/60 p-4 sm:items-center">
+        <div className="fixed inset-0 z-[80] flex items-end justify-center bg-ink/60 p-4 sm:items-center" data-native-cursor="">
           <div
             role="dialog"
             aria-modal="true"

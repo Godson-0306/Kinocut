@@ -1,6 +1,6 @@
 import { ObjectId, type Filter } from "mongodb";
 import { formatNaira, formatPrice } from "@/content/site";
-import { planById, type PlanId, type VerifiedCharge } from "@/lib/billing";
+import { planName, type ChargeCurrency, type PlanId, type VerifiedCharge } from "@/lib/billing";
 import { db } from "@/lib/db";
 import { sendPaymentEmails } from "@/lib/mail";
 import { hashPassword } from "@/lib/passwords";
@@ -147,6 +147,51 @@ function bays() {
   return db().then((database) => database.collection<BayDoc>("bays"));
 }
 
+type CheckoutAttemptDoc = {
+  _id: ObjectId;
+  name: string;
+  email: string;
+  plan: PlanId;
+  currency: ChargeCurrency;
+  amount: number;
+  txRef?: string;
+  status: "started" | "paid";
+  createdAt: Date;
+};
+
+function checkoutAttempts() {
+  return db().then((database) => database.collection<CheckoutAttemptDoc>("checkoutAttempts"));
+}
+
+export async function recordCheckoutAttempt(input: {
+  name: string;
+  email: string;
+  plan: PlanId;
+  currency: ChargeCurrency;
+  amount: number;
+}) {
+  const inserted = await (await checkoutAttempts()).insertOne({
+    _id: new ObjectId(),
+    name: input.name,
+    email: input.email,
+    plan: input.plan,
+    currency: input.currency,
+    amount: input.amount,
+    status: "started",
+    createdAt: new Date(),
+  });
+  return inserted.insertedId;
+}
+
+export async function attachCheckoutTxRef(id: ObjectId, txRef: string) {
+  await (await checkoutAttempts()).updateOne({ _id: id }, { $set: { txRef } });
+}
+
+export async function markCheckoutAttemptPaid(txRef: string) {
+  if (!txRef) return;
+  await (await checkoutAttempts()).updateOne({ txRef, status: "started" }, { $set: { status: "paid" } });
+}
+
 function requests() {
   return db().then((database) => database.collection<RequestDoc>("requests"));
 }
@@ -217,7 +262,7 @@ function bayView(bay: BayDoc, jobs: RequestDoc[], clientName: string): BayView {
   return {
     id: bay._id.toString(),
     clientName,
-    planName: planById(bay.plan).name,
+    planName: planName(bay.plan),
     price: priceOf(bay),
     brandKit: kitView(bay.brandKit),
     requests: jobs.map(summary),
@@ -301,6 +346,7 @@ export async function openBayFromCharge(charge: VerifiedCharge, transactionId = 
   );
   const bay = await bayCollection.findOne({ txRef: charge.txRef });
   if (!bay) return null;
+  await markCheckoutAttemptPaid(charge.txRef).catch(() => undefined);
   let notified = Boolean(bay.notifiedAt);
   if (!notified) {
     const sent = await sendPaymentEmails(charge, transactionId || bay.transactionId).catch(() => false);
@@ -376,7 +422,7 @@ export async function staffDesk(): Promise<{ queue: DeskItem[]; projects: Projec
       bayId: bay._id.toString(),
       requestId: job._id.toString(),
       clientName,
-      planName: planById(bay.plan).name,
+      planName: planName(bay.plan),
       title: job.title,
       age: waited(job.updatedAt),
       lane,
@@ -388,7 +434,7 @@ export async function staffDesk(): Promise<{ queue: DeskItem[]; projects: Projec
     projects.push({
       id: bay._id.toString(),
       clientName,
-      planName: planById(bay.plan).name,
+      planName: planName(bay.plan),
       price: priceOf(bay),
       inMotion: active.length + queued.length + delivered.length > 0,
     });

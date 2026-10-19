@@ -25,6 +25,36 @@ async function postEmail(key: string, from: string, to: string, subject: string,
   }
 }
 
+export async function sendCheckoutAttemptEmail(input: {
+  name: string;
+  email: string;
+  plan: VerifiedCharge["plan"];
+  currency: VerifiedCharge["currency"];
+  amount: number;
+}) {
+  const key = process.env.RESEND_API_KEY;
+  const from = process.env.EMAIL_FROM;
+  if (!key || !from) {
+    console.error("Payment email is not configured");
+    return false;
+  }
+  const plan = planById(input.plan);
+  const price = input.currency === "NGN" ? formatNaira(input.amount) : formatPrice(input.amount);
+  return postEmail(
+    key,
+    from,
+    site.email,
+    `Checkout started — ${plan.name} — ${input.email}`,
+    [
+      `${input.name} started checkout for ${plan.name}. The payment is not finished.`,
+      "",
+      `Email: ${input.email}`,
+      `Plan: ${plan.name}`,
+      `Amount: ${price} ${site.pricing.cadence}`,
+    ].join("\n"),
+  );
+}
+
 export async function sendPaymentEmails(charge: VerifiedCharge, transactionId: string) {
   const key = process.env.RESEND_API_KEY;
   const from = process.env.EMAIL_FROM;
